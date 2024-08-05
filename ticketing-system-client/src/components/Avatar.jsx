@@ -1,10 +1,32 @@
 // Avatar.jsx
-import React from 'react';
-import { AppBar, Toolbar, Typography, Button, IconButton } from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import { AppBar, Toolbar, Typography, Button, IconButton, Stack } from '@mui/material';
 import Logout from './Logout';
 import AccountCircle from '@mui/icons-material/AccountCircle';
+import { fetchUser } from '../api';
+import { useNavigate } from 'react-router-dom';
 
-function Avatar({ user }) {
+function Avatar() {
+  const [user, setUser] = useState(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const getUser = async () => {
+      try {
+        const userData = await fetchUser();
+        setUser(userData);
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+
+    getUser();
+  }, []);
+
+  const handleNavigation = (path) => {
+    navigate(path);
+  };
+
   return (
     <AppBar position="static">
       <Toolbar>
@@ -19,7 +41,10 @@ function Avatar({ user }) {
             <Logout />
           </div>
         ) : (
-          <Button color="inherit">Login</Button>
+          <Stack direction="row" spacing={2}>
+            <Button color="inherit" onClick={() => handleNavigation('/login')}>Login</Button>
+            <Button color="inherit" onClick={() => handleNavigation('/register')}>Register</Button>
+          </Stack>
         )}
       </Toolbar>
     </AppBar>
