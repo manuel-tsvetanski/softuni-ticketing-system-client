@@ -7,6 +7,7 @@ function TicketList() {
 
   useEffect(() => {
     api.get('/tickets').then((response) => {
+      console.log(response.data);
       setTickets(response.data);
     }).catch((error) => {
       console.error("There was an error fetching the tickets!", error);

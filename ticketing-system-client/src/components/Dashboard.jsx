@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link, Outlet } from 'react-router-dom';
 import { fetchUser } from '../api';
+import Avatar from './Avatar';
 
 function Dashboard() {
   const [user, setUser] = useState(null);
@@ -20,8 +21,8 @@ function Dashboard() {
 
   return (
     <div>
+      <Avatar user={user} />
       <h1>Dashboard</h1>
-      {user && <p>Welcome, {user.name}!</p>}
       <nav>
         <ul>
           <li><Link to="create-ticket">Create New Ticket</Link></li>
