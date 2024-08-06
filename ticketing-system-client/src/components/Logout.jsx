@@ -1,10 +1,10 @@
+// Logout.jsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../api';
 import { Button } from '@mui/material';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import ConfirmationDialog from './ConfirmationDialogPopup';
-
 
 function Logout() {
   const navigate = useNavigate();
@@ -33,28 +33,20 @@ function Logout() {
 
   return (
     <>
-      <Button variant="outlined" color="error" onClick={handleClickOpen}>
+      <Button variant="contained" color="secondary" onClick={handleClickOpen} startIcon={<ExitToAppIcon />}>
         Logout
       </Button>
-      <Dialog
+      <ConfirmationDialog
         open={open}
-        onClose={handleClose}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <DialogTitle id="alert-dialog-title">{"Confirm Logout"}</DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            Are you sure you want to logout?
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose}>Cancel</Button>
-          <Button onClick={handleLogout} color="primary" autoFocus>
-            Logout
-          </Button>
-        </DialogActions>
-      </Dialog>
+        title="Confirm Logout"
+        description="Are you sure you want to logout from the application? All unsaved changes will be lost."
+        onConfirm={handleLogout}
+        onCancel={handleClose}
+        confirmButtonText="Logout"
+        cancelButtonText="Cancel"
+        confirmButtonColor="error"
+        confirmButtonIcon={<ExitToAppIcon />}
+      />
     </>
   );
 }

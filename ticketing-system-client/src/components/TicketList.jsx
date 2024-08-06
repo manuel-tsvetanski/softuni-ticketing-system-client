@@ -21,19 +21,62 @@ function TicketList() {
 
   useEffect(() => {
     api.get('/tickets').then((response) => {
-      console.log(response.data);
       setTickets(response.data);
     }).catch((error) => {
       console.error("There was an error fetching the tickets!", error);
     });
   }, []);
 
-  const handleDelete = async (id) => {
+  const handleOpenPopup = (ticket, mode) => {
+    setSelectedTicket(ticket || {});
+    setPopupOpen(true);
+    setEditMode(mode === 'edit');
+    setViewMode(mode === 'view');
+  };
+
+  const handleClosePopup = () => {
+    setPopupOpen(false);
+    setSelectedTicket(null);
+  };
+
+  const handleDeleteClick = (ticket) => {
+    setSelectedTicket(ticket);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
     try {
-      await api.delete(`/tickets/${id}`);
-      setTickets(tickets.filter(ticket => ticket.id !== id));
+      await api.delete(`/tickets/${selectedTicket.id}`);
+      setTickets(tickets.filter(ticket => ticket.id !== selectedTicket.id));
+      setDeleteDialogOpen(false);
+      setSelectedTicket(null);
     } catch (error) {
       console.error("There was an error deleting the ticket!", error);
+      setDeleteDialogOpen(false);
+    }
+  };
+
+  const handleDeleteCancel = () => {
+    setDeleteDialogOpen(false);
+    setSelectedTicket(null);
+  };
+
+  const handleSubmit = async (ticketData) => {
+    try {
+      if (editMode) {
+        await api.put(`/tickets/${selectedTicket.id}`, ticketData);
+      } else {
+        await api.post('/tickets', ticketData);
+      }
+      setPopupOpen(false);
+      setEditMode(false);
+      setViewMode(false);
+      setSelectedTicket(null);
+      // Refresh ticket list
+      const response = await api.get('/tickets');
+      setTickets(response.data);
+    } catch (error) {
+      console.error("There was an error submitting the ticket!", error);
     }
   };
 
@@ -55,7 +98,7 @@ function TicketList() {
           <TableHead>
             <TableRow>
               <TableCell>Title</TableCell>
-              <TableCell align="right">Actions</TableCell>
+              {isAuthenticated && <TableCell align="right">Actions</TableCell>}
             </TableRow>
           </TableHead>
           <TableBody>
