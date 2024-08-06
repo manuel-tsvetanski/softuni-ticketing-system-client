@@ -1,50 +1,37 @@
 // Avatar.jsx
-import React, { useEffect, useState } from 'react';
-import { AppBar, Toolbar, Typography, Button, IconButton, Stack } from '@mui/material';
+import React from 'react';
+import { AppBar, Toolbar, Typography, Button, IconButton, Box } from '@mui/material';
 import Logout from './Logout';
 import AccountCircle from '@mui/icons-material/AccountCircle';
-import { fetchUser } from '../api';
+import useAuth from '../hooks/useAuth'; // Adjust the path as needed
 import { useNavigate } from 'react-router-dom';
 
 function Avatar() {
-  const [user, setUser] = useState(null);
+  const { user, loading, isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const getUser = async () => {
-      try {
-        const userData = await fetchUser();
-        setUser(userData);
-      } catch (error) {
-        console.error("Error fetching user data:", error);
-      }
-    };
-
-    getUser();
-  }, []);
-
-  const handleNavigation = (path) => {
-    navigate(path);
-  };
+  if (loading) {
+    return null; // Render nothing while loading
+  }
 
   return (
     <AppBar position="static">
-      <Toolbar>
-        <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-          Welcome, {user ? user.name : 'Guest'}
+      <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <Typography variant="h6" component="div" noWrap sx={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
+          Welcome, {isAuthenticated ? user.name : 'Guest'}
         </Typography>
-        {user ? (
-          <div>
+        {isAuthenticated ? (
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
             <IconButton color="inherit">
               <AccountCircle />
             </IconButton>
             <Logout />
-          </div>
+          </Box>
         ) : (
-          <Stack direction="row" spacing={2}>
-            <Button color="inherit" onClick={() => handleNavigation('/login')}>Login</Button>
-            <Button color="inherit" onClick={() => handleNavigation('/register')}>Register</Button>
-          </Stack>
+          <Box sx={{ display: 'flex', gap: 2 }}>
+            <Button color="inherit" onClick={() => navigate('/login')}>Login</Button>
+            <Button color="inherit" onClick={() => navigate('/register')}>Register</Button>
+          </Box>
         )}
       </Toolbar>
     </AppBar>

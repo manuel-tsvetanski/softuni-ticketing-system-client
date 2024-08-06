@@ -1,6 +1,5 @@
-// TicketList.jsx
 import React, { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import {
   Table, TableBody, TableCell, TableContainer,
   TableHead, TableRow, Paper, Button, IconButton
@@ -8,7 +7,8 @@ import {
 import { Delete as DeleteIcon, Edit as EditIcon } from '@mui/icons-material';
 import api from '../api';
 import TicketPopup from './TicketPopup';
-import ConfirmationDialog from './ConfirmationDialog';
+import ConfirmationDialog from './ConfirmationDialogPopup';
+import useAuth from '../hooks/useAuth';
 
 function TicketList() {
   const [tickets, setTickets] = useState([]);
@@ -17,7 +17,7 @@ function TicketList() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [viewMode, setViewMode] = useState(false);
   const [editMode, setEditMode] = useState(false);
-  const navigate = useNavigate();
+  const { isAuthenticated, loading } = useAuth();
 
   useEffect(() => {
     api.get('/tickets').then((response) => {
@@ -80,19 +80,25 @@ function TicketList() {
     }
   };
 
+  if (loading) {
+    return null; // Render nothing while loading
+  }
+
   return (
     <div>
-      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '10px' }}>
-        <Button variant="contained" color="primary" onClick={() => handleOpenPopup(null, 'create')}>
-          Create New Ticket
-        </Button>
-      </div>
+      {isAuthenticated && (
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '10px' }}>
+          <Button variant="contained" color="primary" onClick={() => handleOpenPopup(null, 'create')}>
+            Create New Ticket
+          </Button>
+        </div>
+      )}
       <TableContainer component={Paper}>
         <Table>
           <TableHead>
             <TableRow>
               <TableCell>Title</TableCell>
-              <TableCell align="right">Actions</TableCell>
+              {isAuthenticated && <TableCell align="right">Actions</TableCell>}
             </TableRow>
           </TableHead>
           <TableBody>
@@ -101,14 +107,16 @@ function TicketList() {
                 <TableCell>
                   <Link to="#" onClick={() => handleOpenPopup(ticket, 'view')}>{ticket.title}</Link>
                 </TableCell>
-                <TableCell align="right">
-                  <IconButton color="primary" onClick={() => handleOpenPopup(ticket, 'edit')}>
-                    <EditIcon />
-                  </IconButton>
-                  <IconButton color="secondary" onClick={() => handleDeleteClick(ticket)}>
-                    <DeleteIcon />
-                  </IconButton>
-                </TableCell>
+                {isAuthenticated && (
+                  <TableCell align="right">
+                    <IconButton color="primary" onClick={() => handleOpenPopup(ticket, 'edit')}>
+                      <EditIcon />
+                    </IconButton>
+                    <IconButton color="secondary" onClick={() => handleDeleteClick(ticket)}>
+                      <DeleteIcon />
+                    </IconButton>
+                  </TableCell>
+                )}
               </TableRow>
             ))}
           </TableBody>

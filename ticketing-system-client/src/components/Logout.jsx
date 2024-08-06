@@ -4,8 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import api from '../api';
 import { Button } from '@mui/material';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
-import ConfirmationDialog from './ConfirmationDialog';
-
+import ConfirmationDialog from './ConfirmationDialogPopup';
 
 function Logout() {
   const navigate = useNavigate();

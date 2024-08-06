@@ -38,7 +38,7 @@ function App() {
           alignItems: 'center',
           width: '100%',
         }}>
-          <Paper elevation={3} sx={{ p: 3, width: '100%', maxWidth: 600 }}>
+          <Paper elevation={3} sx={{ p: 3, mt: 3, width: '100%', maxHeight: '80%', maxWidth: 600 }}>
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/login" element={<Login />} />
