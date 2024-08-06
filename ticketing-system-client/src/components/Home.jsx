@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button, Typography, Container, Stack } from '@mui/material';
+import { Button, Container, Stack } from '@mui/material';
 import Avatar from './Avatar';
 
 function Home() {

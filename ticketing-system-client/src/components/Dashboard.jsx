@@ -1,16 +1,15 @@
-import { Link, Outlet } from 'react-router-dom';
+// Dashboard.jsx
+import React from 'react';
+import { Routes, Route, Outlet } from 'react-router-dom';
 import Avatar from './Avatar';
+import TicketList from './TicketList';
 
 function Dashboard() {
   return (
     <div>
       <Avatar />
       <h1>Dashboard</h1>
-      <nav>
-        <ul>
-          <li><Link to="create-ticket">Create New Ticket</Link></li>
-        </ul>
-      </nav>
+      <TicketList />
       <Outlet />
     </div>
   );
