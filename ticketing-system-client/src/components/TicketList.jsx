@@ -9,6 +9,7 @@ import api from '../api';
 import TicketPopup from './TicketPopup';
 import ConfirmationDialog from './ConfirmationDialogPopup';
 import useAuth from '../hooks/useAuth';
+import { getStatusIcon } from '../utils/statusUtils';
 
 function TicketList() {
   const [tickets, setTickets] = useState([]);
@@ -98,6 +99,7 @@ function TicketList() {
           <TableHead>
             <TableRow>
               <TableCell>Title</TableCell>
+              <TableCell>Status</TableCell> {/* Status Column */}
               {isAuthenticated && <TableCell align="right">Actions</TableCell>}
             </TableRow>
           </TableHead>
@@ -105,7 +107,12 @@ function TicketList() {
             {tickets.map((ticket) => (
               <TableRow key={ticket.id}>
                 <TableCell>
-                  <Link to="#" onClick={() => handleOpenPopup(ticket, 'view')}>{ticket.title}</Link>
+                  <Link to="#" onClick={() => handleOpenPopup(ticket, 'view')}>
+                    {ticket.title}
+                  </Link>
+                </TableCell>
+                <TableCell>
+                  {getStatusIcon(ticket.status)} {/* Display status icon */}
                 </TableCell>
                 {isAuthenticated && (
                   <TableCell align="right">

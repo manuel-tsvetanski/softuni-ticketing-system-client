@@ -2,8 +2,9 @@
 import React, { useState, useEffect } from 'react';
 import {
   Dialog, DialogTitle, DialogContent,
-  DialogActions, Button, TextField, Typography
+  DialogActions, Button, TextField, Typography, Select, MenuItem, FormControl, InputLabel
 } from '@mui/material';
+import { statusOptions } from '../utils/statusUtils'; // Import the status options
 
 function TicketPopup({ open, onClose, onSubmit, initialData = {}, isEdit, isView }) {
   const [title, setTitle] = useState('');
@@ -58,15 +59,20 @@ function TicketPopup({ open, onClose, onSubmit, initialData = {}, isEdit, isView
               disabled={isView}
             />
             {isEdit && (
-              <TextField
-                margin="dense"
-                label="Status"
-                type="text"
-                fullWidth
-                variant="outlined"
-                value={status}
-                onChange={(e) => setStatus(e.target.value)}
-              />
+              <FormControl fullWidth margin="dense" variant="outlined">
+                <InputLabel>Status</InputLabel>
+                <Select
+                  value={status}
+                  onChange={(e) => setStatus(e.target.value)}
+                  label="Status"
+                >
+                  {statusOptions.map(option => (
+                    <MenuItem key={option.value} value={option.value}>
+                      {option.label} {option.icon}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
             )}
           </>
         )}
