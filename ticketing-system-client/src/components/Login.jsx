@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Container, Typography, TextField, Button, Box } from '@mui/material';
+import { Container, Typography, TextField, Button, Box, Alert } from '@mui/material';
 import api from '../api';
 
 function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -15,6 +16,16 @@ function Login() {
       localStorage.setItem('token', response.data.token);
       navigate('/dashboard');
     } catch (error) {
+      if (error.response && error.response.status === 401) {
+        // Handle incorrect password or other authentication errors
+        setErrorMessage(error.response.data.error);
+      } else if (error.response && error.response.data && error.response.data.errors) {
+        // Handle validation errors
+        setErrorMessage(error.response.data.errors);
+      } else {
+        // Handle other errors
+        setErrorMessage('An error occurred. Please try again later.');
+      }
       console.error("There was an error logging in!", error);
     }
   };
@@ -33,6 +44,11 @@ function Login() {
           Login
         </Typography>
         <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+          {errorMessage && (
+            <Alert severity="error" sx={{ width: '100%' }}>
+              {errorMessage}
+            </Alert>
+          )}
           <TextField
             variant="outlined"
             margin="normal"
