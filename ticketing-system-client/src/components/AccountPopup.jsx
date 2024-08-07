@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Dialog, DialogTitle, DialogActions, Button, TextField, Container, Typography, Box, Alert
+  Dialog, DialogTitle, DialogContent, DialogActions,
+  Button, TextField, Container, Typography, Box, Alert
 } from '@mui/material';
 import api from '../api';
 
@@ -13,6 +14,7 @@ function AccountPopup({ open, onClose, mode, user, onUserUpdate }) {
   const [avatar, setAvatar] = useState(null);
   const [previewAvatar, setPreviewAvatar] = useState(null);
   const [errors, setErrors] = useState({});
+  const [successMessage, setSuccessMessage] = useState('');
 
   const isEditAccountMode = mode === 'edit-account';
   const isChangePasswordMode = mode === 'change-password';
@@ -38,6 +40,7 @@ function AccountPopup({ open, onClose, mode, user, onUserUpdate }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrors({});
+    setSuccessMessage('');
     try {
       if (isEditAccountMode) {
         const formData = new FormData();
@@ -54,13 +57,15 @@ function AccountPopup({ open, onClose, mode, user, onUserUpdate }) {
         });
 
         onUserUpdate(response.data.user);
+        setSuccessMessage('Account updated successfully!');
 
       } else if (isChangePasswordMode) {
         if (newPassword !== confirmNewPassword) {
           setErrors({ confirmNewPassword: 'New password and confirmation do not match.' });
           return;
         }
-        await api.post('/change-password', { current_password: currentPassword, new_password: newPassword, new_password_confirmation: confirmNewPassword });
+        const response = await api.post('/change-password', { current_password: currentPassword, new_password: newPassword, new_password_confirmation: confirmNewPassword });
+        setSuccessMessage(response.data.message);
       }
       onClose();
     } catch (error) {
@@ -78,143 +83,160 @@ function AccountPopup({ open, onClose, mode, user, onUserUpdate }) {
   };
 
   return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="xs">
-      <Container component="main" maxWidth="xs">
-        <Box
-          sx={{
-            marginTop: 2,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-          }}
-        >
-          <DialogTitle>
-            <Typography component="h1" variant="h5">
-              {isEditAccountMode ? 'Edit User Account' : 'Change Password'}
-            </Typography>
-          </DialogTitle>
-          <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
-            {errors.general && (
-              <Alert severity="error" sx={{ width: '100%' }}>
-                {errors.general}
-              </Alert>
-            )}
-            {isEditAccountMode && (
-              <>
-                <TextField
-                  variant="outlined"
-                  margin="normal"
-                  required
-                  fullWidth
-                  id="name"
-                  label="Name"
-                  name="name"
-                  autoComplete="name"
-                  autoFocus
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  error={!!errors.name}
-                  helperText={errors.name}
-                />
-                <TextField
-                  variant="outlined"
-                  margin="normal"
-                  required
-                  fullWidth
-                  id="email"
-                  label="Email Address"
-                  name="email"
-                  autoComplete="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  error={!!errors.email}
-                  helperText={errors.email}
-                />
-                <Box sx={{ display: 'flex', alignItems: 'center', mt: 2 }}>
-                  {previewAvatar && (
-                    <img
-                      src={previewAvatar}
-                      alt="avatar preview"
-                      style={{ width: 60, height: 60, borderRadius: '50%', marginRight: 10 }}
+    <>
+      <Dialog open={open} onClose={onClose} fullWidth maxWidth="xs">
+        <Container component="main" maxWidth="xs">
+          <Box
+            sx={{
+              marginTop: 2,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+            }}
+          >
+            <DialogTitle>
+              <Typography component="div" variant="h5">
+                {isEditAccountMode ? 'Edit User Account' : 'Change Password'}
+              </Typography>
+            </DialogTitle>
+            <DialogContent>
+              <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+                {errors.general && (
+                  <Alert severity="error" sx={{ width: '100%' }}>
+                    {errors.general}
+                  </Alert>
+                )}
+                {isEditAccountMode && (
+                  <>
+                    <TextField
+                      variant="outlined"
+                      margin="normal"
+                      required
+                      fullWidth
+                      id="name"
+                      label="Name"
+                      name="name"
+                      autoComplete="name"
+                      autoFocus
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      error={!!errors.name}
+                      helperText={errors.name}
                     />
-                  )}
-                  <Button variant="contained" component="label">
-                    Upload Avatar
-                    <input
-                      type="file"
-                      accept="image/*"
-                      hidden
-                      onChange={handleAvatarChange}
+                    <TextField
+                      variant="outlined"
+                      margin="normal"
+                      required
+                      fullWidth
+                      id="email"
+                      label="Email Address"
+                      name="email"
+                      autoComplete="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      error={!!errors.email}
+                      helperText={errors.email}
                     />
+                    <Box sx={{ display: 'flex', alignItems: 'center', mt: 2 }}>
+                      {previewAvatar && (
+                        <img
+                          src={previewAvatar}
+                          alt="avatar preview"
+                          style={{ width: 60, height: 60, borderRadius: '50%', marginRight: 10 }}
+                        />
+                      )}
+                      <Button variant="contained" component="label">
+                        Upload Avatar
+                        <input
+                          type="file"
+                          accept="image/*"
+                          hidden
+                          onChange={handleAvatarChange}
+                        />
+                      </Button>
+                    </Box>
+                  </>
+                )}
+                {isChangePasswordMode && (
+                  <>
+                    <TextField
+                      variant="outlined"
+                      margin="normal"
+                      required
+                      fullWidth
+                      name="currentPassword"
+                      label="Current Password"
+                      type="password"
+                      id="currentPassword"
+                      autoComplete="current-password"
+                      value={currentPassword}
+                      onChange={(e) => setCurrentPassword(e.target.value)}
+                      error={!!errors.current_password}
+                      helperText={errors.current_password}
+                    />
+                    <TextField
+                      variant="outlined"
+                      margin="normal"
+                      required
+                      fullWidth
+                      name="newPassword"
+                      label="New Password"
+                      type="password"
+                      id="newPassword"
+                      autoComplete="new-password"
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      error={!!errors.new_password}
+                      helperText={errors.new_password}
+                    />
+                    <TextField
+                      variant="outlined"
+                      margin="normal"
+                      required
+                      fullWidth
+                      name="confirmNewPassword"
+                      label="Confirm New Password"
+                      type="password"
+                      id="confirmNewPassword"
+                      autoComplete="new-password"
+                      value={confirmNewPassword}
+                      onChange={(e) => setConfirmNewPassword(e.target.value)}
+                      error={!!errors.confirmNewPassword}
+                      helperText={errors.confirmNewPassword}
+                    />
+                  </>
+                )}
+                <DialogActions>
+                  <Button
+                    type="submit"
+                    fullWidth
+                    variant="contained"
+                    color="primary"
+                    sx={{ mt: 3, mb: 2 }}
+                  >
+                    {isEditAccountMode ? 'Save Changes' : 'Change Password'}
                   </Button>
-                </Box>
-              </>
-            )}
-            {isChangePasswordMode && (
-              <>
-                <TextField
-                  variant="outlined"
-                  margin="normal"
-                  required
-                  fullWidth
-                  name="currentPassword"
-                  label="Current Password"
-                  type="password"
-                  id="currentPassword"
-                  autoComplete="current-password"
-                  value={currentPassword}
-                  onChange={(e) => setCurrentPassword(e.target.value)}
-                  error={!!errors.current_password}
-                  helperText={errors.current_password}
-                />
-                <TextField
-                  variant="outlined"
-                  margin="normal"
-                  required
-                  fullWidth
-                  name="newPassword"
-                  label="New Password"
-                  type="password"
-                  id="newPassword"
-                  autoComplete="new-password"
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                  error={!!errors.new_password}
-                  helperText={errors.new_password}
-                />
-                <TextField
-                  variant="outlined"
-                  margin="normal"
-                  required
-                  fullWidth
-                  name="confirmNewPassword"
-                  label="Confirm New Password"
-                  type="password"
-                  id="confirmNewPassword"
-                  autoComplete="new-password"
-                  value={confirmNewPassword}
-                  onChange={(e) => setConfirmNewPassword(e.target.value)}
-                  error={!!errors.confirmNewPassword}
-                  helperText={errors.confirmNewPassword}
-                />
-              </>
-            )}
-            <DialogActions>
-              <Button
-                type="submit"
-                fullWidth
-                variant="contained"
-                color="primary"
-                sx={{ mt: 3, mb: 2 }}
-              >
-                {isEditAccountMode ? 'Save Changes' : 'Change Password'}
-              </Button>
-              <Button onClick={onClose} color="primary">Cancel</Button>
-            </DialogActions>
+                  <Button onClick={onClose} color="primary">Cancel</Button>
+                </DialogActions>
+              </Box>
+            </DialogContent>
           </Box>
-        </Box>
-      </Container>
-    </Dialog>
+        </Container>
+      </Dialog>
+
+      {/* Success Dialog */}
+      {successMessage && (
+        <Dialog open={Boolean(successMessage)} onClose={() => setSuccessMessage('')}>
+          <DialogTitle>Success !</DialogTitle>
+          <DialogContent>
+            <Typography>{successMessage}</Typography>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setSuccessMessage('')} color="primary">OK</Button>
+          </DialogActions>
+        </Dialog>
+      )}
+    </>
   );
 }
 
