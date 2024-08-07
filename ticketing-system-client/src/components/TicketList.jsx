@@ -2,12 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Table, TableBody, TableCell, TableContainer,
-  TableHead, TableRow, Paper, Button, IconButton
+  TableHead, TableRow, Paper, Button, IconButton, Badge
 } from '@mui/material';
-import { Delete as DeleteIcon, Edit as EditIcon } from '@mui/icons-material';
+import { Delete as DeleteIcon, Edit as EditIcon, Comment as CommentIcon } from '@mui/icons-material';
 import api from '../api';
 import TicketPopup from './TicketPopup';
 import ConfirmationDialog from './ConfirmationDialogPopup';
+import TicketCommentList from './TicketCommentList';
 import useAuth from '../hooks/useAuth';
 import { getStatusIcon } from '../utils/statusUtils';
 
@@ -15,6 +16,7 @@ function TicketList() {
   const [tickets, setTickets] = useState([]);
   const [selectedTicket, setSelectedTicket] = useState(null);
   const [popupOpen, setPopupOpen] = useState(false);
+  const [commentPopupOpen, setCommentPopupOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [viewMode, setViewMode] = useState(false);
   const [editMode, setEditMode] = useState(false);
@@ -37,6 +39,16 @@ function TicketList() {
 
   const handleClosePopup = () => {
     setPopupOpen(false);
+    setSelectedTicket(null);
+  };
+
+  const handleOpenComments = (ticket) => {
+    setSelectedTicket(ticket || {});
+    setCommentPopupOpen(true);
+  };
+
+  const handleCloseComments = () => {
+    setCommentPopupOpen(false);
     setSelectedTicket(null);
   };
 
@@ -81,6 +93,14 @@ function TicketList() {
     }
   };
 
+  const updateCommentCount = (ticketId, newCount) => {
+    setTickets(prevTickets =>
+      prevTickets.map(ticket =>
+        ticket.id === ticketId ? { ...ticket, comments_count: newCount } : ticket
+      )
+    );
+  };
+
   if (loading) {
     return null; // Render nothing while loading
   }
@@ -99,7 +119,8 @@ function TicketList() {
           <TableHead>
             <TableRow>
               <TableCell>Title</TableCell>
-              <TableCell>Status</TableCell> {/* Status Column */}
+              <TableCell>Status</TableCell>
+              <TableCell>Comments</TableCell>
               {isAuthenticated && <TableCell align="right">Actions</TableCell>}
             </TableRow>
           </TableHead>
@@ -111,8 +132,13 @@ function TicketList() {
                     {ticket.title}
                   </Link>
                 </TableCell>
+                <TableCell>{getStatusIcon(ticket.status)}</TableCell>
                 <TableCell>
-                  {getStatusIcon(ticket.status)} {/* Display status icon */}
+                  <IconButton onClick={() => handleOpenComments(ticket)}>
+                    <Badge badgeContent={ticket.comments_count} color="primary">
+                      <CommentIcon />
+                    </Badge>
+                  </IconButton>
                 </TableCell>
                 {isAuthenticated && (
                   <TableCell align="right">
@@ -136,6 +162,12 @@ function TicketList() {
         initialData={selectedTicket}
         isEdit={editMode}
         isView={viewMode}
+      />
+      <TicketCommentList
+        ticketId={selectedTicket?.id}
+        open={commentPopupOpen}
+        onClose={handleCloseComments}
+        onUpdateCommentCount={updateCommentCount} // Pass the function to update comments count
       />
       <ConfirmationDialog
         open={deleteDialogOpen}
