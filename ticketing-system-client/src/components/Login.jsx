@@ -67,6 +67,14 @@ function Login() {
           >
             Login
           </Button>
+          <Button
+            fullWidth
+            variant="outlined"
+            onClick={() => navigate(-1)} // Navigate to the previous page
+            sx={{ mt: 1 }}
+          >
+            Back
+          </Button>
         </Box>
       </Box>
     </Container>
