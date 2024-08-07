@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api from '../api';
-import { Container, Typography, TextField, Button, Box } from '@mui/material';
+import api from '../../api';
+import { Container, Typography, TextField, Button, Box, Alert } from '@mui/material';
 
 function Register() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [errors, setErrors] = useState({});
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -15,7 +16,11 @@ function Register() {
       await api.post('/register', { name, email, password });
       navigate('/login');
     } catch (error) {
-      console.error("There was an error registering!", error);
+      if (error.response && error.response.status === 422) {
+        setErrors(error.response.data.errors);
+      } else {
+        console.error("There was an error registering!", error);
+      }
     }
   };
 
@@ -33,6 +38,11 @@ function Register() {
           Register
         </Typography>
         <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+          {errors.general && (
+            <Alert severity="error" sx={{ width: '100%' }}>
+              {errors.general}
+            </Alert>
+          )}
           <TextField
             variant="outlined"
             margin="normal"
@@ -45,6 +55,8 @@ function Register() {
             autoFocus
             value={name}
             onChange={(e) => setName(e.target.value)}
+            error={!!errors.name}
+            helperText={errors.name ? errors.name[0] : ''}
           />
           <TextField
             variant="outlined"
@@ -57,6 +69,8 @@ function Register() {
             autoComplete="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            error={!!errors.email}
+            helperText={errors.email ? errors.email[0] : ''}
           />
           <TextField
             variant="outlined"
@@ -70,6 +84,8 @@ function Register() {
             autoComplete="current-password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            error={!!errors.password}
+            helperText={errors.password ? errors.password[0] : ''}
           />
           <Button
             type="submit"

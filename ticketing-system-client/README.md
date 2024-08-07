@@ -18,7 +18,7 @@ To set up and run the React client locally, follow these steps:
 Clone the repository:
 
 bash
-Копиране на код
+ 
 git clone https://github.com/manuel-tsvetanski/softuni-ticketing-system-client/tree/master/ticketing-system-client.git
 cd ticketing-system-client
 Install dependencies:
@@ -26,21 +26,21 @@ Install dependencies:
 Make sure you have Node.js and npm installed. Then run:
 
 bash
-Копиране на код
+ 
 npm install
 Set up environment variables:
 
 Create a .env file in the root of the project and add the following environment variable:
 
 plaintext
-Копиране на код
+ 
 VITE_BACKEND_URL=http://localhost:8000
 Replace http://localhost:8000 with the URL of your backend server if it's different.
 
 Run the development server:
 
 bash
-Копиране на код
+ 
 npm run dev
 This will start the development server and open the application in your default browser. The app will automatically reload if you make changes to the code.
 
@@ -55,7 +55,7 @@ Project Structure
 The project's structure is as follows:
 
 arduino
-Копиране на код
+ 
 ticketing-system-client/
 ├── public/
 │   └── index.html

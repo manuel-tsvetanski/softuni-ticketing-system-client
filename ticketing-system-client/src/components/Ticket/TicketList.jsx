@@ -5,12 +5,12 @@ import {
   TableHead, TableRow, Paper, Button, IconButton, Badge
 } from '@mui/material';
 import { Delete as DeleteIcon, Edit as EditIcon, Comment as CommentIcon } from '@mui/icons-material';
-import api from '../api';
+import api from '../../api';
 import TicketPopup from './TicketPopup';
-import ConfirmationDialog from './ConfirmationDialogPopup';
+import ConfirmationDialog from '../ConfirmationDialogPopup';
 import TicketCommentList from './TicketCommentList';
-import useAuth from '../hooks/useAuth';
-import { getStatusIcon } from '../utils/statusUtils';
+import useAuth from '../../hooks/useAuth';
+import { getStatusIcon } from '../../utils/statusUtils';
 
 function TicketList() {
   const [tickets, setTickets] = useState([]);

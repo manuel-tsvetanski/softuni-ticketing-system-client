@@ -4,10 +4,10 @@ import {
   DialogActions, Button, List, ListItem, ListItemText, IconButton, Box, Typography
 } from '@mui/material';
 import { Delete as DeleteIcon, AddComment as AddCommentIcon, ArrowBack as ArrowBackIcon, ArrowForward as ArrowForwardIcon } from '@mui/icons-material';
-import api from '../api';
-import useAuth from '../hooks/useAuth';
+import api from '../../api';
+import useAuth from '../../hooks/useAuth';
 import TicketCommentPopup from './TicketCommentPopup';
-import ConfirmationDialog from './ConfirmationDialogPopup';
+import ConfirmationDialog from '../ConfirmationDialogPopup';
 
 function TicketCommentList({ ticketId, open, onClose, onUpdateCommentCount }) {
   const [comments, setComments] = useState([]);

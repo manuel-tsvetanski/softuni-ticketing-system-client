@@ -1,7 +1,6 @@
 // ConfirmationDialog.jsx
 import React from 'react';
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Slide } from '@mui/material';
-import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import CancelIcon from '@mui/icons-material/Cancel';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
