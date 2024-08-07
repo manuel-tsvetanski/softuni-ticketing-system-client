@@ -61,22 +61,34 @@ ticketing-system-client/
 │   └── index.html
 ├── src/
 │   ├── assets/
+│   │   └── react.svg
 │   ├── components/
-│   │   ├── AccountMenu.jsx
-│   │   ├── AccountPopup.jsx
-│   │   ├── Avatar.jsx
-│   │   ├── Logout.jsx
-│   │   ├── TicketCommentList.jsx
-│   │   ├── TicketCommentPopup.jsx
-│   │   └── ConfirmationDialogPopup.jsx
+│   │   ├── AccountSettings/
+│   │   │   ├── AccountMenu.jsx
+│   │   │   ├── AccountPopup.jsx
+│   │   │   ├── Avatar.jsx
+│   │   │   └── Logout.jsx
+│   │   ├── Authentication/
+│   │   │   ├── Login.jsx
+│   │   │   ├── Register.jsx
+│   │   │   └── Logout.jsx (if not already in AccountSettings)
+│   │   ├── Ticket/
+│   │   │   ├── TicketCommentList.jsx
+│   │   │   ├── TicketCommentPopup.jsx
+│   │   │   ├── TicketList.jsx
+│   │   │   └── TicketPopup.jsx
+│   │   ├── ConfirmationDialogPopup.jsx
+│   │   ├── Dashboard.jsx
+│   │   └── Home.jsx
 │   ├── hooks/
 │   │   └── useAuth.jsx
 │   ├── utils/
-│   │   ├── statusUtils.jsx
+│   │   └── statusUtils.jsx
 │   ├── api.js
+│   ├── App.css
 │   ├── App.jsx
-    └── index.css
-    └── main.jsx
+│   ├── index.css
+│   └── main.jsx
 ├── .env
 ├── .eslintrc.js
 ├── vite.config.js
