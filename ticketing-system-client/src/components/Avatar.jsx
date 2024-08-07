@@ -1,6 +1,5 @@
-// Avatar.jsx
 import React from 'react';
-import { AppBar, Toolbar, Typography, Box } from '@mui/material';
+import { AppBar, Toolbar, Typography, Box, Button } from '@mui/material'; // Ensure Button is imported here
 import Logout from './Logout';
 import AccountMenu from './AccountMenu';
 import useAuth from '../hooks/useAuth';
