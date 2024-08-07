@@ -23,7 +23,7 @@ const useAuth = () => {
     fetchUser();
   }, []);
 
-  return { user, loading, isAuthenticated };
+  return { user, setUser, loading, isAuthenticated };
 };
 
 export default useAuth;

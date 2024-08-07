@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Menu, MenuItem, IconButton, ListItemIcon, ListItemText, Tooltip, Avatar } from '@mui/material';
+import { Menu, MenuItem, IconButton, ListItemIcon, ListItemText, Tooltip, Avatar as MuiAvatar } from '@mui/material';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import EditIcon from '@mui/icons-material/Edit';
 import LockIcon from '@mui/icons-material/Lock';
@@ -10,7 +10,7 @@ function AccountMenu() {
   const [anchorEl, setAnchorEl] = useState(null);
   const [popupMode, setPopupMode] = useState(null);
   const [popupOpen, setPopupOpen] = useState(false);
-  const { user } = useAuth(); // Get user data from context
+  const { user, setUser } = useAuth(); // Get user data from context
 
   // Define the base URL for your backend server
   const backendBaseUrl = "http://localhost:8000"; // Change to your backend URL
@@ -33,6 +33,11 @@ function AccountMenu() {
     setPopupOpen(false);
   };
 
+  const handleUserUpdate = (updatedUser) => {
+    setUser(updatedUser);
+    handleClosePopup();
+  };
+
   return (
     <>
       <Tooltip title="Account settings">
@@ -46,7 +51,7 @@ function AccountMenu() {
           }}
         >
           {user && user.avatar ? (
-            <Avatar 
+            <MuiAvatar 
               src={`${backendBaseUrl}/storage/${user.avatar}`} // Construct the full URL
               alt={user.name}
               sx={{ width: 40, height: 40 }}
@@ -100,6 +105,7 @@ function AccountMenu() {
         onClose={handleClosePopup} 
         mode={popupMode} 
         user={user} // Pass user data as a prop
+        onUserUpdate={handleUserUpdate} // Handle user update
       />
     </>
   );
