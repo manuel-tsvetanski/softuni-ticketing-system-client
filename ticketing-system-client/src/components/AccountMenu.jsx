@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Menu, MenuItem, IconButton, ListItemIcon, ListItemText, Tooltip, Avatar as MuiAvatar } from '@mui/material';
+import { Menu, MenuItem, IconButton, ListItemIcon, ListItemText, Typography, Tooltip, Avatar as MuiAvatar, Box } from '@mui/material';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import EditIcon from '@mui/icons-material/Edit';
 import LockIcon from '@mui/icons-material/Lock';
@@ -10,7 +10,7 @@ function AccountMenu() {
   const [anchorEl, setAnchorEl] = useState(null);
   const [popupMode, setPopupMode] = useState(null);
   const [popupOpen, setPopupOpen] = useState(false);
-  const { user, setUser } = useAuth(); // Get user data from context
+  const { user, setUser, isAuthenticated } = useAuth();
 
   // Define the base URL for your backend server
   const backendBaseUrl = "http://localhost:8000"; // Change to your backend URL
@@ -39,16 +39,15 @@ function AccountMenu() {
   };
 
   return (
-    <>
+    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+      <Typography variant="h6" component="div" noWrap sx={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
+        Welcome, {isAuthenticated ? user.name : 'Guest'}
+      </Typography>
       <Tooltip title="Account settings">
         <IconButton
           color="inherit"
           onClick={handleClick}
-          sx={{ 
-            borderRadius: 2, 
-            mr: 2,
-            '&:hover': { bgcolor: 'grey.300' } 
-          }}
+          sx={{ borderRadius: 2, '&:hover': { bgcolor: 'grey.300' } }}
         >
           {user && user.avatar ? (
             <MuiAvatar 
@@ -107,7 +106,7 @@ function AccountMenu() {
         user={user} // Pass user data as a prop
         onUserUpdate={handleUserUpdate} // Handle user update
       />
-    </>
+    </Box>
   );
 }
 
