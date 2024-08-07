@@ -11,24 +11,50 @@ function AccountPopup({ open, onClose, mode, user }) {
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmNewPassword, setConfirmNewPassword] = useState('');
+  const [avatar, setAvatar] = useState(null);
+  const [previewAvatar, setPreviewAvatar] = useState(null);
 
   const isEditAccountMode = mode === 'edit-account';
   const isChangePasswordMode = mode === 'change-password';
+
+  // Define the base URL for your backend server
+  const backendBaseUrl = "http://localhost:8000";
 
   useEffect(() => {
     if (isEditAccountMode && user) {
       // Prefill the form with user data
       setName(user.name);
       setEmail(user.email);
+      if (user.avatar) {
+        setPreviewAvatar(`${backendBaseUrl}/storage/${user.avatar}`);
+      }
     }
   }, [isEditAccountMode, user]);
+
+  const handleAvatarChange = (e) => {
+    const file = e.target.files[0];
+    setAvatar(file);
+    setPreviewAvatar(URL.createObjectURL(file));
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       if (isEditAccountMode) {
+        // Create a form data object for updating the account including the avatar
+        const formData = new FormData();
+        formData.append('email', email);
+        formData.append('name', name);
+        if (avatar) {
+          formData.append('avatar', avatar);
+        }
+
         // Call API to update user account
-        await api.put('/update-account', { email, name });
+        await api.post('/update-account', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        });
       } else if (isChangePasswordMode) {
         // Check if new passwords match
         if (newPassword !== confirmNewPassword) {
@@ -88,6 +114,24 @@ function AccountPopup({ open, onClose, mode, user }) {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                 />
+                <Box sx={{ display: 'flex', alignItems: 'center', mt: 2 }}>
+                  {previewAvatar && (
+                    <img
+                      src={previewAvatar}
+                      alt="avatar preview"
+                      style={{ width: 60, height: 60, borderRadius: '50%', marginRight: 10 }}
+                    />
+                  )}
+                  <Button variant="contained" component="label">
+                    Upload Avatar
+                    <input
+                      type="file"
+                      accept="image/*"
+                      hidden
+                      onChange={handleAvatarChange}
+                    />
+                  </Button>
+                </Box>
               </>
             )}
             {isChangePasswordMode && (

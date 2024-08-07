@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Menu, MenuItem, IconButton, ListItemIcon, ListItemText, Tooltip } from '@mui/material';
+import { Menu, MenuItem, IconButton, ListItemIcon, ListItemText, Tooltip, Avatar } from '@mui/material';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import EditIcon from '@mui/icons-material/Edit';
 import LockIcon from '@mui/icons-material/Lock';
@@ -11,6 +11,9 @@ function AccountMenu() {
   const [popupMode, setPopupMode] = useState(null);
   const [popupOpen, setPopupOpen] = useState(false);
   const { user } = useAuth(); // Get user data from context
+
+  // Define the base URL for your backend server
+  const backendBaseUrl = "http://localhost:8000"; // Change to your backend URL
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -42,7 +45,15 @@ function AccountMenu() {
             '&:hover': { bgcolor: 'grey.300' } 
           }}
         >
-          <AccountCircle fontSize="large" />
+          {user && user.avatar ? (
+            <Avatar 
+              src={`${backendBaseUrl}/storage/${user.avatar}`} // Construct the full URL
+              alt={user.name}
+              sx={{ width: 40, height: 40 }}
+            />
+          ) : (
+            <AccountCircle fontSize="large" />
+          )}
         </IconButton>
       </Tooltip>
       <Menu
