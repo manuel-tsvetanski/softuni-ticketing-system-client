@@ -93,6 +93,14 @@ function TicketList() {
     }
   };
 
+  const updateCommentCount = (ticketId, newCount) => {
+    setTickets(prevTickets =>
+      prevTickets.map(ticket =>
+        ticket.id === ticketId ? { ...ticket, comments_count: newCount } : ticket
+      )
+    );
+  };
+
   if (loading) {
     return null; // Render nothing while loading
   }
@@ -159,6 +167,7 @@ function TicketList() {
         ticketId={selectedTicket?.id}
         open={commentPopupOpen}
         onClose={handleCloseComments}
+        onUpdateCommentCount={updateCommentCount} // Pass the function to update comments count
       />
       <ConfirmationDialog
         open={deleteDialogOpen}

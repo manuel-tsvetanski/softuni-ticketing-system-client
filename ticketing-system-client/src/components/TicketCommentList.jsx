@@ -1,4 +1,3 @@
-// TicketCommentList.jsx
 import React, { useState, useEffect } from 'react';
 import {
   Dialog, DialogTitle, DialogContent,
@@ -10,7 +9,7 @@ import useAuth from '../hooks/useAuth';
 import TicketCommentPopup from './TicketCommentPopup';
 import ConfirmationDialog from './ConfirmationDialogPopup';
 
-function TicketCommentList({ ticketId, open, onClose }) {
+function TicketCommentList({ ticketId, open, onClose, onUpdateCommentCount }) {
   const [comments, setComments] = useState([]);
   const [commentPopupOpen, setCommentPopupOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -20,7 +19,6 @@ function TicketCommentList({ ticketId, open, onClose }) {
   useEffect(() => {
     if (ticketId) {
       api.get(`/tickets/${ticketId}/comments`).then((response) => {
-        console.log(response.data);
         setComments(response.data);
       }).catch((error) => {
         console.error("Error fetching comments:", error);
@@ -44,7 +42,9 @@ function TicketCommentList({ ticketId, open, onClose }) {
   const handleDeleteConfirm = async () => {
     try {
       await api.delete(`/comments/${selectedCommentId}`);
-      setComments(comments.filter(comment => comment.id !== selectedCommentId));
+      const updatedComments = comments.filter(comment => comment.id !== selectedCommentId);
+      setComments(updatedComments);
+      onUpdateCommentCount(ticketId, updatedComments.length);
       setDeleteDialogOpen(false);
       setSelectedCommentId(null);
     } catch (error) {
@@ -58,6 +58,21 @@ function TicketCommentList({ ticketId, open, onClose }) {
     setSelectedCommentId(null);
   };
 
+  const handleCommentAdded = (newComment) => {
+    console.log("New comment to be added:", newComment);
+    console.log("Previous comments state before update:", comments);
+    
+    // Update the comments state with the new comment
+    setComments(prevComments => {
+      const updatedComments = [...prevComments, newComment];
+      console.log("Updating comments state with:", updatedComments);
+      return updatedComments;
+    });
+    
+    // Update the comment count (with a correct length)
+    onUpdateCommentCount(ticketId, comments.length + 1);
+  };
+  
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
       <DialogTitle>Comments</DialogTitle>
@@ -90,7 +105,7 @@ function TicketCommentList({ ticketId, open, onClose }) {
         open={commentPopupOpen}
         onClose={handleCloseCommentPopup}
         ticketId={ticketId}
-        onCommentAdded={setComments}
+        onCommentAdded={handleCommentAdded} // Use the handler to add a comment
       />
       <ConfirmationDialog
         open={deleteDialogOpen}

@@ -12,14 +12,14 @@ function TicketCommentPopup({ open, onClose, ticketId, onCommentAdded }) {
   const handleAddComment = async () => {
     try {
       const response = await api.post(`/tickets/${ticketId}/comments`, { comment });
-      onCommentAdded(comments => [...comments, response.data]);
+      onCommentAdded(response.data); // Pass the actual comment data
       setComment('');
       onClose();
     } catch (error) {
       console.error("Error adding comment:", error);
     }
   };
-
+  
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
       <DialogTitle>Add Comment</DialogTitle>
