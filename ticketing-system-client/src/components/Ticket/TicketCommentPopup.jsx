@@ -4,7 +4,7 @@ import {
   Dialog, DialogTitle, DialogContent,
   DialogActions, Button, TextField
 } from '@mui/material';
-import api from '../api';
+import api from '../../api';
 
 function TicketCommentPopup({ open, onClose, ticketId, onCommentAdded }) {
   const [comment, setComment] = useState('');

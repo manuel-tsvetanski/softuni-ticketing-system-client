@@ -4,7 +4,7 @@ import {
   Dialog, DialogTitle, DialogContent,
   DialogActions, Button, TextField, Typography, Select, MenuItem, FormControl, InputLabel
 } from '@mui/material';
-import { statusOptions } from '../utils/statusUtils'; // Import the status options
+import { statusOptions } from '../../utils/statusUtils'; // Import the status options
 
 function TicketPopup({ open, onClose, onSubmit, initialData = {}, isEdit, isView }) {
   const [title, setTitle] = useState('');

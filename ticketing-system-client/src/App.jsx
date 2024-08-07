@@ -4,8 +4,8 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { CssBaseline, Container, Paper, ThemeProvider, createTheme } from '@mui/material';
 
 import Home from './components/Home';
-import Login from './components/Login';
-import Register from './components/Register';
+import Login from './components/Authentication/Login';
+import Register from './components/Authentication/Register';
 import Dashboard from './components/Dashboard';
 
 const theme = createTheme({

@@ -2,8 +2,8 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Routes, Route, Outlet } from 'react-router-dom';
-import Avatar from './Avatar';
-import TicketList from './TicketList';
+import Avatar from './AccountSettings/Avatar';
+import TicketList from './Ticket/TicketList';
 import { Button , useTheme } from '@mui/material';
 
 function Dashboard() {

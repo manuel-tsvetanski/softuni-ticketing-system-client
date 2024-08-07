@@ -3,7 +3,7 @@ import {
   Dialog, DialogTitle, DialogContent, DialogActions,
   Button, TextField, Container, Typography, Box, Alert
 } from '@mui/material';
-import api from '../api';
+import api from '../../api';
 
 function AccountPopup({ open, onClose, mode, user, onUserUpdate }) {
   const [email, setEmail] = useState('');

@@ -1,8 +1,8 @@
 import React from 'react';
 import { AppBar, Toolbar, Box, Button } from '@mui/material';
-import Logout from './Logout';
+import Logout from '../Authentication/Logout';
 import AccountMenu from './AccountMenu';
-import useAuth from '../hooks/useAuth';
+import useAuth from '../../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 
 function Avatar() {

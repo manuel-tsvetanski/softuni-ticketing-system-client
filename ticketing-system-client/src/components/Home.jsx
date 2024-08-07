@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button, Container, Stack } from '@mui/material';
-import Avatar from './Avatar';
+import Avatar from './AccountSettings/Avatar';
 
 function Home() {
   const navigate = useNavigate();
