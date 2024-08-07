@@ -10,21 +10,19 @@ function Avatar() {
   const navigate = useNavigate();
 
   if (loading) {
-    return null; // Render nothing while loading
+    return null;
   }
 
   return (
     <AppBar position="static">
       <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 1 }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <AccountMenu />
-        </Box>
         {isAuthenticated ? (
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <AccountMenu />
             <Logout />
           </Box>
         ) : (
-          <Box sx={{ display: 'flex', gap: 1 }}>
+          <Box sx={{ display: 'flex', justifyContent: 'center', flexGrow: 1 }}>
             <Button color="inherit" onClick={() => navigate('/login')}>Login</Button>
             <Button color="inherit" onClick={() => navigate('/register')}>Register</Button>
           </Box>
