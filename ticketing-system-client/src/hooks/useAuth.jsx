@@ -13,8 +13,15 @@ const useAuth = () => {
         setUser(response.data);
         setIsAuthenticated(true);
       } catch (error) {
-        console.error("Error fetching user data: ", error);
-        setIsAuthenticated(false);
+        if (error.response && error.response.status === 401) {
+          // Handle 401 Unauthorized error specifically without logging
+          setIsAuthenticated(false);
+        } else {
+          // Log other errors based on environment
+          if (process.env.NODE_ENV === 'development') {
+            console.error("Unexpected error fetching user data: ", error);
+          }
+        }
       } finally {
         setLoading(false);
       }
