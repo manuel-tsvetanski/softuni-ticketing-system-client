@@ -1,9 +1,9 @@
 // Avatar.jsx
 import React from 'react';
-import { AppBar, Toolbar, Typography, Button, IconButton, Box } from '@mui/material';
+import { AppBar, Toolbar, Typography, Box } from '@mui/material';
 import Logout from './Logout';
-import AccountCircle from '@mui/icons-material/AccountCircle';
-import useAuth from '../hooks/useAuth'; // Adjust the path as needed
+import AccountMenu from './AccountMenu';
+import useAuth from '../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 
 function Avatar() {
@@ -22,9 +22,7 @@ function Avatar() {
         </Typography>
         {isAuthenticated ? (
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <IconButton color="inherit">
-              <AccountCircle />
-            </IconButton>
+            <AccountMenu />
             <Logout />
           </Box>
         ) : (
