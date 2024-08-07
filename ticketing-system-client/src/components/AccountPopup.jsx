@@ -5,7 +5,7 @@ import {
 } from '@mui/material';
 import api from '../api';
 
-function AccountPopup({ open, onClose, mode, user }) {
+function AccountPopup({ open, onClose, mode, user, onUserUpdate }) {
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
   const [currentPassword, setCurrentPassword] = useState('');
@@ -50,11 +50,15 @@ function AccountPopup({ open, onClose, mode, user }) {
         }
 
         // Call API to update user account
-        await api.post('/update-account', formData, {
+        const response = await api.post('/update-account', formData, {
           headers: {
             'Content-Type': 'multipart/form-data'
           }
         });
+
+        // Update the user data
+        onUserUpdate(response.data.user);
+
       } else if (isChangePasswordMode) {
         // Check if new passwords match
         if (newPassword !== confirmNewPassword) {
