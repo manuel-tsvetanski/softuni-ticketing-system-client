@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Dialog, DialogTitle, DialogContent,
-  DialogActions, Button, TextField, Container, Typography, Box
+  Dialog, DialogTitle, DialogActions, Button, TextField, Container, Typography, Box, Alert
 } from '@mui/material';
 import api from '../api';
 
@@ -13,16 +12,15 @@ function AccountPopup({ open, onClose, mode, user, onUserUpdate }) {
   const [confirmNewPassword, setConfirmNewPassword] = useState('');
   const [avatar, setAvatar] = useState(null);
   const [previewAvatar, setPreviewAvatar] = useState(null);
+  const [errors, setErrors] = useState({});
 
   const isEditAccountMode = mode === 'edit-account';
   const isChangePasswordMode = mode === 'change-password';
 
-  // Define the base URL for your backend server
   const backendBaseUrl = "http://localhost:8000";
 
   useEffect(() => {
     if (isEditAccountMode && user) {
-      // Prefill the form with user data
       setName(user.name);
       setEmail(user.email);
       if (user.avatar) {
@@ -39,9 +37,9 @@ function AccountPopup({ open, onClose, mode, user, onUserUpdate }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setErrors({});
     try {
       if (isEditAccountMode) {
-        // Create a form data object for updating the account including the avatar
         const formData = new FormData();
         formData.append('email', email);
         formData.append('name', name);
@@ -49,27 +47,32 @@ function AccountPopup({ open, onClose, mode, user, onUserUpdate }) {
           formData.append('avatar', avatar);
         }
 
-        // Call API to update user account
         const response = await api.post('/update-account', formData, {
           headers: {
             'Content-Type': 'multipart/form-data'
           }
         });
 
-        // Update the user data
         onUserUpdate(response.data.user);
 
       } else if (isChangePasswordMode) {
-        // Check if new passwords match
         if (newPassword !== confirmNewPassword) {
-          alert("New password and confirmation do not match.");
+          setErrors({ confirmNewPassword: 'New password and confirmation do not match.' });
           return;
         }
-        // Call API to change password
         await api.post('/change-password', { current_password: currentPassword, new_password: newPassword, new_password_confirmation: confirmNewPassword });
       }
-      onClose(); // Close the popup after successful submission
+      onClose();
     } catch (error) {
+      if (error.response && error.response.data) {
+        if (error.response.data.errors) {
+          setErrors(error.response.data.errors);
+        } else if (error.response.data.error) {
+          setErrors({ general: error.response.data.error });
+        }
+      } else {
+        setErrors({ general: 'An error occurred. Please try again later.' });
+      }
       console.error("There was an error processing your request!", error);
     }
   };
@@ -91,6 +94,11 @@ function AccountPopup({ open, onClose, mode, user, onUserUpdate }) {
             </Typography>
           </DialogTitle>
           <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+            {errors.general && (
+              <Alert severity="error" sx={{ width: '100%' }}>
+                {errors.general}
+              </Alert>
+            )}
             {isEditAccountMode && (
               <>
                 <TextField
@@ -105,6 +113,8 @@ function AccountPopup({ open, onClose, mode, user, onUserUpdate }) {
                   autoFocus
                   value={name}
                   onChange={(e) => setName(e.target.value)}
+                  error={!!errors.name}
+                  helperText={errors.name}
                 />
                 <TextField
                   variant="outlined"
@@ -117,6 +127,8 @@ function AccountPopup({ open, onClose, mode, user, onUserUpdate }) {
                   autoComplete="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  error={!!errors.email}
+                  helperText={errors.email}
                 />
                 <Box sx={{ display: 'flex', alignItems: 'center', mt: 2 }}>
                   {previewAvatar && (
@@ -152,6 +164,8 @@ function AccountPopup({ open, onClose, mode, user, onUserUpdate }) {
                   autoComplete="current-password"
                   value={currentPassword}
                   onChange={(e) => setCurrentPassword(e.target.value)}
+                  error={!!errors.current_password}
+                  helperText={errors.current_password}
                 />
                 <TextField
                   variant="outlined"
@@ -165,6 +179,8 @@ function AccountPopup({ open, onClose, mode, user, onUserUpdate }) {
                   autoComplete="new-password"
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
+                  error={!!errors.new_password}
+                  helperText={errors.new_password}
                 />
                 <TextField
                   variant="outlined"
@@ -178,6 +194,8 @@ function AccountPopup({ open, onClose, mode, user, onUserUpdate }) {
                   autoComplete="new-password"
                   value={confirmNewPassword}
                   onChange={(e) => setConfirmNewPassword(e.target.value)}
+                  error={!!errors.confirmNewPassword}
+                  helperText={errors.confirmNewPassword}
                 />
               </>
             )}
