@@ -1,15 +1,18 @@
-// TicketPopup.jsx
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Dialog, DialogTitle, DialogContent,
   DialogActions, Button, TextField, Typography, Select, MenuItem, FormControl, InputLabel
 } from '@mui/material';
-import { statusOptions } from '../../utils/statusUtils'; // Import the status options
+import { useDispatch, useSelector } from 'react-redux';
+import { saveTicket } from '../../features/tickets/ticketsSlice';
+import { statusOptions } from '../../utils/statusUtils';
 
-function TicketPopup({ open, onClose, onSubmit, initialData = {}, isEdit, isView }) {
+function TicketPopup({ open, onClose, initialData = {}, isEdit, isView }) {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [status, setStatus] = useState('open');
+  const dispatch = useDispatch();
+  const { loading } = useSelector((state) => state.tickets);
 
   useEffect(() => {
     if (initialData) {
@@ -20,7 +23,9 @@ function TicketPopup({ open, onClose, onSubmit, initialData = {}, isEdit, isView
   }, [initialData]);
 
   const handleSubmit = () => {
-    onSubmit({ title, description, status });
+    const ticketData = { title, description, status };
+    const ticketId = initialData.id || null;
+    dispatch(saveTicket({ ticketId, ticketData }));
     onClose();
   };
 
@@ -44,7 +49,7 @@ function TicketPopup({ open, onClose, onSubmit, initialData = {}, isEdit, isView
               variant="outlined"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              disabled={isView}
+              disabled={loading || isView}
             />
             <TextField
               margin="dense"
@@ -56,7 +61,7 @@ function TicketPopup({ open, onClose, onSubmit, initialData = {}, isEdit, isView
               onChange={(e) => setDescription(e.target.value)}
               multiline
               rows={4}
-              disabled={isView}
+              disabled={loading || isView}
             />
             {isEdit && (
               <FormControl fullWidth margin="dense" variant="outlined">
@@ -65,6 +70,7 @@ function TicketPopup({ open, onClose, onSubmit, initialData = {}, isEdit, isView
                   value={status}
                   onChange={(e) => setStatus(e.target.value)}
                   label="Status"
+                  disabled={loading}
                 >
                   {statusOptions.map(option => (
                     <MenuItem key={option.value} value={option.value}>
@@ -78,10 +84,17 @@ function TicketPopup({ open, onClose, onSubmit, initialData = {}, isEdit, isView
         )}
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose} color="primary">Close</Button>
-        {!isView && <Button onClick={handleSubmit} color="primary" variant="contained">
-          {isEdit ? "Update" : "Create"}
-        </Button>}
+        <Button onClick={onClose} color="primary" disabled={loading}>Close</Button>
+        {!isView && (
+          <Button
+            onClick={handleSubmit}
+            color="primary"
+            variant="contained"
+            disabled={loading || !title.trim() || !description.trim()} // Validate form inputs
+          >
+            {isEdit ? "Update" : "Create"}
+          </Button>
+        )}
       </DialogActions>
     </Dialog>
   );

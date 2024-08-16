@@ -6,12 +6,14 @@ import {
 import api from '../../api';
 
 function AccountPopup({ open, onClose, mode, user, onUserUpdate }) {
-  const [email, setEmail] = useState('');
-  const [name, setName] = useState('');
-  const [currentPassword, setCurrentPassword] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmNewPassword, setConfirmNewPassword] = useState('');
-  const [avatar, setAvatar] = useState(null);
+  const [formData, setFormData] = useState({
+    email: '',
+    name: '',
+    currentPassword: '',
+    newPassword: '',
+    confirmNewPassword: '',
+    avatar: null,
+  });
   const [previewAvatar, setPreviewAvatar] = useState(null);
   const [errors, setErrors] = useState({});
   const [successMessage, setSuccessMessage] = useState('');
@@ -23,17 +25,30 @@ function AccountPopup({ open, onClose, mode, user, onUserUpdate }) {
 
   useEffect(() => {
     if (isEditAccountMode && user) {
-      setName(user.name);
-      setEmail(user.email);
+      setFormData({
+        email: user.email,
+        name: user.name,
+        currentPassword: '',
+        newPassword: '',
+        confirmNewPassword: '',
+        avatar: null,
+      });
       if (user.avatar) {
         setPreviewAvatar(`${backendBaseUrl}/storage/${user.avatar}`);
       }
     }
   }, [isEditAccountMode, user]);
 
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
   const handleAvatarChange = (e) => {
     const file = e.target.files[0];
-    setAvatar(file);
+    setFormData({ ...formData, avatar: file });
     setPreviewAvatar(URL.createObjectURL(file));
   };
 
@@ -41,40 +56,43 @@ function AccountPopup({ open, onClose, mode, user, onUserUpdate }) {
     e.preventDefault();
     setErrors({});
     setSuccessMessage('');
+
     try {
       if (isEditAccountMode) {
-        const formData = new FormData();
-        formData.append('email', email);
-        formData.append('name', name);
-        if (avatar) {
-          formData.append('avatar', avatar);
+        const formDataToSend = new FormData();
+        formDataToSend.append('email', formData.email);
+        formDataToSend.append('name', formData.name);
+        if (formData.avatar) {
+          formDataToSend.append('avatar', formData.avatar);
         }
 
-        const response = await api.post('/update-account', formData, {
+        const response = await api.post('/update-account', formDataToSend, {
           headers: {
-            'Content-Type': 'multipart/form-data'
-          }
+            'Content-Type': 'multipart/form-data',
+          },
         });
 
         onUserUpdate(response.data.user);
         setSuccessMessage('Account updated successfully!');
 
       } else if (isChangePasswordMode) {
-        if (newPassword !== confirmNewPassword) {
+        if (formData.newPassword !== formData.confirmNewPassword) {
           setErrors({ confirmNewPassword: 'New password and confirmation do not match.' });
           return;
         }
-        const response = await api.post('/change-password', { current_password: currentPassword, new_password: newPassword, new_password_confirmation: confirmNewPassword });
+
+        const response = await api.post('/change-password', {
+          current_password: formData.currentPassword,
+          new_password: formData.newPassword,
+          new_password_confirmation: formData.confirmNewPassword,
+        });
+
         setSuccessMessage(response.data.message);
       }
       onClose();
     } catch (error) {
       if (error.response && error.response.data) {
-        if (error.response.data.errors) {
-          setErrors(error.response.data.errors);
-        } else if (error.response.data.error) {
-          setErrors({ general: error.response.data.error });
-        }
+        setErrors(error.response.data.errors || { general: error.response.data.error });
       } else {
         setErrors({ general: 'An error occurred. Please try again later.' });
       }
@@ -86,14 +104,7 @@ function AccountPopup({ open, onClose, mode, user, onUserUpdate }) {
     <>
       <Dialog open={open} onClose={onClose} fullWidth maxWidth="xs">
         <Container component="main" maxWidth="xs">
-          <Box
-            sx={{
-              marginTop: 2,
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-            }}
-          >
+          <Box sx={{ marginTop: 2, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <DialogTitle>
               <Typography component="div" variant="h5">
                 {isEditAccountMode ? 'Edit User Account' : 'Change Password'}
@@ -118,8 +129,8 @@ function AccountPopup({ open, onClose, mode, user, onUserUpdate }) {
                       name="name"
                       autoComplete="name"
                       autoFocus
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
+                      value={formData.name}
+                      onChange={handleChange}
                       error={!!errors.name}
                       helperText={errors.name}
                     />
@@ -132,8 +143,8 @@ function AccountPopup({ open, onClose, mode, user, onUserUpdate }) {
                       label="Email Address"
                       name="email"
                       autoComplete="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
+                      value={formData.email}
+                      onChange={handleChange}
                       error={!!errors.email}
                       helperText={errors.email}
                     />
@@ -169,8 +180,8 @@ function AccountPopup({ open, onClose, mode, user, onUserUpdate }) {
                       type="password"
                       id="currentPassword"
                       autoComplete="current-password"
-                      value={currentPassword}
-                      onChange={(e) => setCurrentPassword(e.target.value)}
+                      value={formData.currentPassword}
+                      onChange={handleChange}
                       error={!!errors.current_password}
                       helperText={errors.current_password}
                     />
@@ -184,8 +195,8 @@ function AccountPopup({ open, onClose, mode, user, onUserUpdate }) {
                       type="password"
                       id="newPassword"
                       autoComplete="new-password"
-                      value={newPassword}
-                      onChange={(e) => setNewPassword(e.target.value)}
+                      value={formData.newPassword}
+                      onChange={handleChange}
                       error={!!errors.new_password}
                       helperText={errors.new_password}
                     />
@@ -199,8 +210,8 @@ function AccountPopup({ open, onClose, mode, user, onUserUpdate }) {
                       type="password"
                       id="confirmNewPassword"
                       autoComplete="new-password"
-                      value={confirmNewPassword}
-                      onChange={(e) => setConfirmNewPassword(e.target.value)}
+                      value={formData.confirmNewPassword}
+                      onChange={handleChange}
                       error={!!errors.confirmNewPassword}
                       helperText={errors.confirmNewPassword}
                     />
@@ -224,7 +235,6 @@ function AccountPopup({ open, onClose, mode, user, onUserUpdate }) {
         </Container>
       </Dialog>
 
-      {/* Success Dialog */}
       {successMessage && (
         <Dialog open={Boolean(successMessage)} onClose={() => setSuccessMessage('')}>
           <DialogTitle>Success !</DialogTitle>

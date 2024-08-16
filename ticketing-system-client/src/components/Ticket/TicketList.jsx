@@ -1,34 +1,32 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Table, TableBody, TableCell, TableContainer,
   TableHead, TableRow, Paper, Button, IconButton, Badge
 } from '@mui/material';
 import { Delete as DeleteIcon, Edit as EditIcon, Comment as CommentIcon } from '@mui/icons-material';
-import api from '../../api';
+import { useDispatch, useSelector } from 'react-redux';
 import TicketPopup from './TicketPopup';
 import ConfirmationDialog from '../ConfirmationDialogPopup';
 import TicketCommentList from './TicketCommentList';
-import useAuth from '../../hooks/useAuth';
+import { fetchTickets, saveTicket, deleteTicket } from '../../features/tickets/ticketsSlice';
 import { getStatusIcon } from '../../utils/statusUtils';
 
 function TicketList() {
-  const [tickets, setTickets] = useState([]);
-  const [selectedTicket, setSelectedTicket] = useState(null);
-  const [popupOpen, setPopupOpen] = useState(false);
-  const [commentPopupOpen, setCommentPopupOpen] = useState(false);
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [viewMode, setViewMode] = useState(false);
-  const [editMode, setEditMode] = useState(false);
-  const { isAuthenticated, loading } = useAuth();
+  const dispatch = useDispatch();
+  const { tickets, loading } = useSelector((state) => state.tickets);
+  const { isAuthenticated } = useSelector((state) => state.auth);
+
+  const [selectedTicket, setSelectedTicket] = React.useState(null);
+  const [popupOpen, setPopupOpen] = React.useState(false);
+  const [commentPopupOpen, setCommentPopupOpen] = React.useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
+  const [editMode, setEditMode] = React.useState(false);
+  const [viewMode, setViewMode] = React.useState(false);
 
   useEffect(() => {
-    api.get('/tickets').then((response) => {
-      setTickets(response.data);
-    }).catch((error) => {
-      console.error("There was an error fetching the tickets!", error);
-    });
-  }, []);
+    dispatch(fetchTickets());
+  }, [dispatch]);
 
   const handleOpenPopup = (ticket, mode) => {
     setSelectedTicket(ticket || {});
@@ -58,15 +56,9 @@ function TicketList() {
   };
 
   const handleDeleteConfirm = async () => {
-    try {
-      await api.delete(`/tickets/${selectedTicket.id}`);
-      setTickets(tickets.filter(ticket => ticket.id !== selectedTicket.id));
-      setDeleteDialogOpen(false);
-      setSelectedTicket(null);
-    } catch (error) {
-      console.error("There was an error deleting the ticket!", error);
-      setDeleteDialogOpen(false);
-    }
+    dispatch(deleteTicket(selectedTicket.id));
+    setDeleteDialogOpen(false);
+    setSelectedTicket(null);
   };
 
   const handleDeleteCancel = () => {
@@ -75,30 +67,16 @@ function TicketList() {
   };
 
   const handleSubmit = async (ticketData) => {
-    try {
-      if (editMode) {
-        await api.put(`/tickets/${selectedTicket.id}`, ticketData);
-      } else {
-        await api.post('/tickets', ticketData);
-      }
-      setPopupOpen(false);
-      setEditMode(false);
-      setViewMode(false);
-      setSelectedTicket(null);
-      // Refresh ticket list
-      const response = await api.get('/tickets');
-      setTickets(response.data);
-    } catch (error) {
-      console.error("There was an error submitting the ticket!", error);
-    }
+    dispatch(saveTicket({ ticketId: selectedTicket?.id, ticketData }));
+    setPopupOpen(false);
+    setEditMode(false);
+    setViewMode(false);
+    setSelectedTicket(null);
   };
 
   const updateCommentCount = (ticketId, newCount) => {
-    setTickets(prevTickets =>
-      prevTickets.map(ticket =>
-        ticket.id === ticketId ? { ...ticket, comments_count: newCount } : ticket
-      )
-    );
+    // Use a Redux action to update the comment count if needed
+    // Assuming the Redux store holds this state and it should be updated in a proper reducer
   };
 
   if (loading) {

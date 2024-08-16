@@ -1,26 +1,33 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api from '../../api';
+import { useDispatch, useSelector } from 'react-redux';
 import { Container, Typography, TextField, Button, Box, Alert } from '@mui/material';
+import { registerUser } from '../../features/auth/authSlice'; // Adjust the import path
 
 function Register() {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [errors, setErrors] = useState({});
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    password: '',
+  });
+  
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+  
+  const { loading, registrationErrors } = useSelector((state) => state.auth);
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      await api.post('/register', { name, email, password });
+    const resultAction = await dispatch(registerUser(formData));
+    if (registerUser.fulfilled.match(resultAction)) {
       navigate('/login');
-    } catch (error) {
-      if (error.response && error.response.status === 422) {
-        setErrors(error.response.data.errors);
-      } else {
-        console.error("There was an error registering!", error);
-      }
     }
   };
 
@@ -38,9 +45,9 @@ function Register() {
           Register
         </Typography>
         <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
-          {errors.general && (
+          {registrationErrors && registrationErrors.general && (
             <Alert severity="error" sx={{ width: '100%' }}>
-              {errors.general}
+              {registrationErrors.general}
             </Alert>
           )}
           <TextField
@@ -53,10 +60,10 @@ function Register() {
             name="name"
             autoComplete="name"
             autoFocus
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            error={!!errors.name}
-            helperText={errors.name ? errors.name[0] : ''}
+            value={formData.name}
+            onChange={handleChange}
+            error={!!registrationErrors?.name}
+            helperText={registrationErrors?.name ? registrationErrors.name[0] : ''}
           />
           <TextField
             variant="outlined"
@@ -67,10 +74,10 @@ function Register() {
             label="Email Address"
             name="email"
             autoComplete="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            error={!!errors.email}
-            helperText={errors.email ? errors.email[0] : ''}
+            value={formData.email}
+            onChange={handleChange}
+            error={!!registrationErrors?.email}
+            helperText={registrationErrors?.email ? registrationErrors.email[0] : ''}
           />
           <TextField
             variant="outlined"
@@ -82,16 +89,17 @@ function Register() {
             type="password"
             id="password"
             autoComplete="current-password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            error={!!errors.password}
-            helperText={errors.password ? errors.password[0] : ''}
+            value={formData.password}
+            onChange={handleChange}
+            error={!!registrationErrors?.password}
+            helperText={registrationErrors?.password ? registrationErrors.password[0] : ''}
           />
           <Button
             type="submit"
             fullWidth
             variant="contained"
             color="primary"
+            disabled={loading}
             sx={{ mt: 3, mb: 2 }}
           >
             Register
@@ -99,10 +107,10 @@ function Register() {
           <Button
             fullWidth
             variant="outlined"
-            onClick={() => navigate(-1)} // Navigate to the previous page
+            onClick={() => navigate('/')} // Navigate to the Home page
             sx={{ mt: 1 }}
           >
-            Back
+            Back to Home
           </Button>
         </Box>
       </Box>

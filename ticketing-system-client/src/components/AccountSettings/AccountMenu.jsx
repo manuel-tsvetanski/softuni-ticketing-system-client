@@ -1,18 +1,29 @@
 import React, { useState } from 'react';
-import { Menu, MenuItem, IconButton, ListItemIcon, ListItemText, Typography, Tooltip, Avatar as MuiAvatar, Box, Button } from '@mui/material';
+import {
+  Menu,
+  MenuItem,
+  IconButton,
+  ListItemIcon,
+  ListItemText,
+  Typography,
+  Tooltip,
+  Avatar as MuiAvatar,
+  Box
+} from '@mui/material';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import EditIcon from '@mui/icons-material/Edit';
 import LockIcon from '@mui/icons-material/Lock';
-import AccountPopup from './AccountPopup';
-import useAuth from '../../hooks/useAuth';
-import Logout from '../Authentication/Logout';
+import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import AccountPopup from './AccountPopup';
+import Logout from '../Authentication/Logout';
 
 function AccountMenu() {
   const [anchorEl, setAnchorEl] = useState(null);
   const [popupMode, setPopupMode] = useState(null);
   const [popupOpen, setPopupOpen] = useState(false);
-  const { user, setUser, isAuthenticated } = useAuth();
+
+  const { user, isAuthenticated } = useSelector((state) => state.auth);
   const navigate = useNavigate();
 
   const backendBaseUrl = "http://localhost:8000";
@@ -36,26 +47,27 @@ function AccountMenu() {
   };
 
   const handleUserUpdate = (updatedUser) => {
-    setUser(updatedUser);
+    // Dispatch an action to update the user in the Redux store if needed
+    // dispatch(updateUser(updatedUser));
     handleClosePopup();
   };
 
   return (
     <Box sx={{ display: 'flex', alignItems: 'center' }}>
-      <Typography variant="h6" component="div" sx={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
+      <Typography variant="h6" component="div" sx={{ overflow: 'hidden', textOverflow: 'ellipsis', mr: 2 }}>
         Welcome, {isAuthenticated ? user.name : 'Guest'}
       </Typography>
-      <Tooltip title="Account settings" sx={{ mr : 4}}>
+      <Tooltip title="Account settings">
         <IconButton
           color="inherit"
           onClick={handleClick}
-          sx={{ borderRadius: 2,  '&:hover': { bgcolor: 'grey.300' , mr : 4 } }}
+          sx={{ borderRadius: 2, '&:hover': { bgcolor: 'grey.300' } }}
         >
-          {user && user.avatar ? (
+          {isAuthenticated && user && user.avatar ? (
             <MuiAvatar
               src={`${backendBaseUrl}/storage/${user.avatar}`}
               alt={user.name}
-              sx={{ width: 40, height: 40 , mr : 4}}
+              sx={{ width: 40, height: 40 }}
             />
           ) : (
             <AccountCircle fontSize="large" />

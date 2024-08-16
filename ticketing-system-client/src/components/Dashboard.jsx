@@ -1,36 +1,42 @@
-// Dashboard.jsx
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Routes, Route, Outlet } from 'react-router-dom';
+import { useNavigate, Outlet } from 'react-router-dom'; // Import Outlet here
+import { useSelector } from 'react-redux';
 import Avatar from './AccountSettings/Avatar';
 import TicketList from './Ticket/TicketList';
-import { Button , useTheme } from '@mui/material';
+import { Button, useTheme, Box, Typography } from '@mui/material';
 
 function Dashboard() {
   const navigate = useNavigate();
   const theme = useTheme();
+
+  // Example of using Redux state directly in Dashboard, if needed
+  const user = useSelector((state) => state.auth.user);
+
   return (
-    <div>
-      <Avatar />
-      <h1>Dashboard</h1>
+    <Box sx={{ padding: 2 }}>
+      <Avatar user={user} />
+      <Typography variant="h4" component="h1" gutterBottom>
+        Dashboard
+      </Typography>
       <TicketList />
       <Button
-            //variant="outlined"
-            onClick={() => navigate(-1)} // Navigate to the previous page
+            fullWidth
+            variant="outlined"
+            onClick={() => navigate('/')}
             sx={{ 
-              width: 1/4,
-              mt: 1,
-              backgroundColor: theme.palette.primary.main, // Use theme primary color for background
-              color: theme.palette.primary.contrastText, // Use theme primary contrast text color
+              width: '40%',
+              mt: 2,
+              backgroundColor: theme.palette.primary.main,
+              color: theme.palette.primary.contrastText,
               '&:hover': {
-                backgroundColor: theme.palette.primary.dark, // Darker shade on hover
+                backgroundColor: theme.palette.primary.dark,
               }
             }}
           >
-            Home
-      </Button>
-      <Outlet />
-    </div>
+            Back to Home
+        </Button>
+      <Outlet /> {/* This will render nested routes if any */}
+    </Box>
   );
 }
 

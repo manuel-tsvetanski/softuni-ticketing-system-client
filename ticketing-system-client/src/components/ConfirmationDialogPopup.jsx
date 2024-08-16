@@ -1,5 +1,5 @@
-// ConfirmationDialog.jsx
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Slide } from '@mui/material';
 import CancelIcon from '@mui/icons-material/Cancel';
 
@@ -7,7 +7,17 @@ const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-function ConfirmationDialog({ open, title, description, onConfirm, onCancel, confirmButtonText, cancelButtonText, confirmButtonColor, confirmButtonIcon }) {
+function ConfirmationDialog({ 
+  open, 
+  title, 
+  description, 
+  onConfirm, 
+  onCancel, 
+  confirmButtonText = 'Confirm', 
+  cancelButtonText = 'Cancel', 
+  confirmButtonColor = 'primary', 
+  confirmButtonIcon 
+}) {
   return (
     <Dialog
       open={open}
@@ -40,5 +50,17 @@ function ConfirmationDialog({ open, title, description, onConfirm, onCancel, con
     </Dialog>
   );
 }
+
+ConfirmationDialog.propTypes = {
+  open: PropTypes.bool.isRequired,
+  title: PropTypes.string.isRequired,
+  description: PropTypes.string.isRequired,
+  onConfirm: PropTypes.func.isRequired,
+  onCancel: PropTypes.func.isRequired,
+  confirmButtonText: PropTypes.string,
+  cancelButtonText: PropTypes.string,
+  confirmButtonColor: PropTypes.string,
+  confirmButtonIcon: PropTypes.element,
+};
 
 export default ConfirmationDialog;
