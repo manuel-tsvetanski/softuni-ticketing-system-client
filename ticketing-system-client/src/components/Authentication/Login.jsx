@@ -1,34 +1,35 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 import { Container, Typography, TextField, Button, Box, Alert } from '@mui/material';
-import api from '../../api';
+import { loginUser } from '../../features/auth/authSlice';
 
 function Login() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [errorMessage, setErrorMessage] = useState('');
+  const [credentials, setCredentials] = useState({ email: '', password: '' });
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const { errorMessage, isAuthenticated } = useSelector((state) => state.auth);
+
+  const handleChange = (e) => {
+    setCredentials({
+      ...credentials,
+      [e.target.name]: e.target.value,
+    });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      const response = await api.post('/login', { email, password });
-      localStorage.setItem('token', response.data.token);
-      navigate('/dashboard');
-    } catch (error) {
-      if (error.response && error.response.status === 401) {
-        // Handle incorrect password or other authentication errors
-        setErrorMessage(error.response.data.error);
-      } else if (error.response && error.response.data && error.response.data.errors) {
-        // Handle validation errors
-        setErrorMessage(error.response.data.errors);
-      } else {
-        // Handle other errors
-        setErrorMessage('An error occurred. Please try again later.');
-      }
-      console.error("There was an error logging in!", error);
-    }
+    dispatch(loginUser(credentials));
   };
+
+  useEffect(() => {
+    console.log("isAuthenticated state in Login component:", isAuthenticated);
+    if (isAuthenticated) {
+      console.log("Already authenticated, redirecting to dashboard.");
+      navigate('/dashboard'); // Redirect to dashboard if logged in
+    }
+  }, [isAuthenticated, navigate]);
 
   return (
     <Container component="main" maxWidth="xs">
@@ -59,8 +60,8 @@ function Login() {
             name="email"
             autoComplete="email"
             autoFocus
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            value={credentials.email}
+            onChange={handleChange}
           />
           <TextField
             variant="outlined"
@@ -72,8 +73,8 @@ function Login() {
             type="password"
             id="password"
             autoComplete="current-password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            value={credentials.password}
+            onChange={handleChange}
           />
           <Button
             type="submit"
@@ -86,10 +87,10 @@ function Login() {
           <Button
             fullWidth
             variant="outlined"
-            onClick={() => navigate(-1)} // Navigate to the previous page
+            onClick={() => navigate('/')}
             sx={{ mt: 1 }}
           >
-            Back
+            Back to Home
           </Button>
         </Box>
       </Box>

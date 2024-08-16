@@ -1,13 +1,19 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { AppBar, Toolbar, Box, Button } from '@mui/material';
 import Logout from '../Authentication/Logout';
 import AccountMenu from './AccountMenu';
-import useAuth from '../../hooks/useAuth';
+import { useSelector, useDispatch } from 'react-redux';
+import { fetchUserApp } from '../../features/auth/authSlice';
 import { useNavigate } from 'react-router-dom';
 
 function Avatar() {
-  const { loading, isAuthenticated } = useAuth();
+  const { loading, isAuthenticated } = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    dispatch(fetchUserApp());
+  }, [dispatch]);
 
   if (loading) {
     return null;

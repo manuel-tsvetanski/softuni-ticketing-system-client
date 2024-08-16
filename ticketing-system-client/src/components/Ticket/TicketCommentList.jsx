@@ -1,39 +1,27 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import {
   Dialog, DialogTitle, DialogContent,
   DialogActions, Button, List, ListItem, ListItemText, IconButton, Box, Typography
 } from '@mui/material';
 import { Delete as DeleteIcon, AddComment as AddCommentIcon, ArrowBack as ArrowBackIcon, ArrowForward as ArrowForwardIcon } from '@mui/icons-material';
-import api from '../../api';
-import useAuth from '../../hooks/useAuth';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchComments, addComment, deleteComment } from '../../features/comments/commentsSlice';
 import TicketCommentPopup from './TicketCommentPopup';
 import ConfirmationDialog from '../ConfirmationDialogPopup';
 
 function TicketCommentList({ ticketId, open, onClose, onUpdateCommentCount }) {
-  const [comments, setComments] = useState([]);
-  const [commentPopupOpen, setCommentPopupOpen] = useState(false);
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [selectedCommentId, setSelectedCommentId] = useState(null);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const { isAuthenticated } = useAuth();
-
-  const fetchComments = async (page) => {
-    try {
-      const response = await api.get(`/tickets/${ticketId}/comments?page=${page}`);
-      setComments(response.data.data); // Use the 'data' key from pagination
-      setCurrentPage(response.data.current_page);
-      setTotalPages(response.data.last_page);
-    } catch (error) {
-      console.error("Error fetching comments:", error);
-    }
-  };
+  const dispatch = useDispatch();
+  const { comments, currentPage, totalPages, loading } = useSelector((state) => state.comments);
+  const { isAuthenticated } = useSelector((state) => state.auth);
+  const [commentPopupOpen, setCommentPopupOpen] = React.useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
+  const [selectedCommentId, setSelectedCommentId] = React.useState(null);
 
   useEffect(() => {
-    if (ticketId) {
-      fetchComments(currentPage);
+    if (ticketId && open) {
+      dispatch(fetchComments({ ticketId, page: currentPage }));
     }
-  }, [ticketId, currentPage]);
+  }, [ticketId, currentPage, open, dispatch]);
 
   const handleAddComment = () => {
     setCommentPopupOpen(true);
@@ -48,18 +36,10 @@ function TicketCommentList({ ticketId, open, onClose, onUpdateCommentCount }) {
     setDeleteDialogOpen(true);
   };
 
-  const handleDeleteConfirm = async () => {
-    try {
-      await api.delete(`/comments/${selectedCommentId}`);
-      const updatedComments = comments.filter(comment => comment.id !== selectedCommentId);
-      setComments(updatedComments);
-      onUpdateCommentCount(ticketId, updatedComments.length);
-      setDeleteDialogOpen(false);
-      setSelectedCommentId(null);
-    } catch (error) {
-      console.error("Error deleting comment:", error);
-      setDeleteDialogOpen(false);
-    }
+  const handleDeleteConfirm = () => {
+    dispatch(deleteComment({ commentId: selectedCommentId }));
+    setDeleteDialogOpen(false);
+    setSelectedCommentId(null);
   };
 
   const handleDeleteCancel = () => {
@@ -68,22 +48,19 @@ function TicketCommentList({ ticketId, open, onClose, onUpdateCommentCount }) {
   };
 
   const handleCommentAdded = (newComment) => {
-    setComments(prevComments => {
-      const updatedComments = [...prevComments, newComment];
-      return updatedComments;
-    });
-    onUpdateCommentCount(ticketId, comments.length + 1);
+    dispatch(addComment({ ticketId, commentData: newComment }));
+    setCommentPopupOpen(false);
   };
 
   const handlePreviousPage = () => {
     if (currentPage > 1) {
-      setCurrentPage(prevPage => prevPage - 1);
+      dispatch(fetchComments({ ticketId, page: currentPage - 1 }));
     }
   };
 
   const handleNextPage = () => {
     if (currentPage < totalPages) {
-      setCurrentPage(prevPage => prevPage + 1);
+      dispatch(fetchComments({ ticketId, page: currentPage + 1 }));
     }
   };
 
@@ -107,13 +84,13 @@ function TicketCommentList({ ticketId, open, onClose, onUpdateCommentCount }) {
           ))}
         </List>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
-          <IconButton onClick={handlePreviousPage} disabled={currentPage === 1}>
+          <IconButton onClick={handlePreviousPage} disabled={currentPage === 1 || loading}>
             <ArrowBackIcon />
           </IconButton>
           <Typography variant="body2">
             Page {currentPage} of {totalPages}
           </Typography>
-          <IconButton onClick={handleNextPage} disabled={currentPage === totalPages}>
+          <IconButton onClick={handleNextPage} disabled={currentPage === totalPages || loading}>
             <ArrowForwardIcon />
           </IconButton>
         </Box>

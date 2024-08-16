@@ -1,13 +1,14 @@
-// Logout.jsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api from '../../api';
+import { useDispatch } from 'react-redux';
 import { Button } from '@mui/material';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import ConfirmationDialog from '../ConfirmationDialogPopup';
+import { logout } from '../../features/auth/authSlice'; // Adjust the import path based on your project structure
 
 function Logout() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [open, setOpen] = useState(false);
 
   const handleClickOpen = () => {
@@ -18,17 +19,10 @@ function Logout() {
     setOpen(false);
   };
 
-  const handleLogout = async () => {
-    try {
-      const response = await api.post('/logout');
-      console.log(response.data.message); // Successfully logged out
-      localStorage.removeItem('token'); // Remove the stored token
-      handleClose();
-      navigate('/');
-    } catch (error) {
-      console.error('Logout failed', error);
-      handleClose();
-    }
+  const handleLogout = () => {
+    dispatch(logout());
+    handleClose();
+    navigate('/');
   };
 
   return (
