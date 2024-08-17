@@ -1,20 +1,19 @@
 import React, { useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';  // Add the Link import here
 import {
   Table, TableBody, TableCell, TableContainer,
   TableHead, TableRow, Paper, Button, IconButton, Badge
 } from '@mui/material';
 import { Delete as DeleteIcon, Edit as EditIcon, Comment as CommentIcon } from '@mui/icons-material';
 import { useDispatch, useSelector } from 'react-redux';
-import ConfirmationDialog from '../ConfirmationDialogPopup';
-import TicketCommentList from './Comment/TicketCommentList';
 import { fetchTickets, deleteTicket } from '../../features/tickets/ticketsSlice';
+import TicketCommentList from './Comment/TicketCommentList';
 import { getStatusIcon } from '../../utils/statusUtils';
 
 function TicketList() {
   const dispatch = useDispatch();
   const { tickets, loading } = useSelector((state) => state.tickets);
-  const { isAuthenticated, user } = useSelector((state) => state.auth); // Get authenticated user
+  const { isAuthenticated, user } = useSelector((state) => state.auth);
   const navigate = useNavigate();
 
   const [selectedTicket, setSelectedTicket] = React.useState(null);
@@ -24,6 +23,11 @@ function TicketList() {
   useEffect(() => {
     dispatch(fetchTickets());
   }, [dispatch]);
+
+  // Add useEffect to monitor ticket updates
+  useEffect(() => {
+    console.log('Tickets updated:', tickets);
+  }, [tickets]);
 
   const handleOpenComments = (ticket) => {
     setSelectedTicket(ticket || {});
@@ -49,11 +53,6 @@ function TicketList() {
   const handleDeleteCancel = () => {
     setDeleteDialogOpen(false);
     setSelectedTicket(null);
-  };
-
-  const updateCommentCount = (ticketId, newCount) => {
-    // Use a Redux action to update the comment count if needed
-    // Assuming the Redux store holds this state and it should be updated in a proper reducer
   };
 
   if (loading) {
@@ -95,7 +94,7 @@ function TicketList() {
                     </Badge>
                   </IconButton>
                 </TableCell>
-                {isAuthenticated && user.id === ticket.user_id && ( // Check if the user is the owner of the ticket
+                {isAuthenticated && user.id === ticket.user_id && (
                   <TableCell align="right">
                     <IconButton color="primary" onClick={() => navigate(`/edit-ticket/${ticket.id}`)}>
                       <EditIcon />
@@ -114,18 +113,7 @@ function TicketList() {
         ticketId={selectedTicket?.id}
         open={commentPopupOpen}
         onClose={handleCloseComments}
-        onUpdateCommentCount={updateCommentCount} // Pass the function to update comments count
-      />
-      <ConfirmationDialog
-        open={deleteDialogOpen}
-        title="Confirm Delete"
-        description={`Are you sure you want to delete the ticket titled "${selectedTicket?.title}"? This action cannot be undone.`}
-        onConfirm={handleDeleteConfirm}
-        onCancel={handleDeleteCancel}
-        confirmButtonText="Delete"
-        cancelButtonText="Cancel"
-        confirmButtonColor="error"
-        confirmButtonIcon={<DeleteIcon />}
+        onUpdateCommentCount={() => dispatch(fetchTickets())} // Refresh ticket list when a comment is added
       />
     </div>
   );

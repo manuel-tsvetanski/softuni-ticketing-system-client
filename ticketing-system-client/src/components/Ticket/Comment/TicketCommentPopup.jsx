@@ -8,7 +8,7 @@ import 'react-quill/dist/quill.snow.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { addComment } from '../../../features/comments/commentsSlice';
 
-function TicketCommentPopup({ open, onClose, ticketId }) {
+function TicketCommentPopup({ open, onClose, ticketId, onCommentAdded }) {
   const [comment, setComment] = useState('');
   const dispatch = useDispatch();
   const { loading } = useSelector((state) => state.comments);
@@ -17,7 +17,11 @@ function TicketCommentPopup({ open, onClose, ticketId }) {
     const resultAction = await dispatch(addComment({ ticketId, commentData: { comment } }));
     if (addComment.fulfilled.match(resultAction)) {
       setComment(''); // Clear the input field after successful comment addition
-      onClose(); // Close the dialog
+      if (onCommentAdded) {
+        console.log('Comment added, triggering onCommentAdded');
+        onCommentAdded(); // Trigger the comment added callback
+      }
+      onClose(); // Close the dialog after adding the comment
     } else {
       console.error("Error adding comment:", resultAction.payload);
     }
@@ -28,10 +32,10 @@ function TicketCommentPopup({ open, onClose, ticketId }) {
       open={open} 
       onClose={onClose} 
       fullWidth 
-      maxWidth="md"  // Increase the size of the dialog to medium
+      maxWidth="md"
       PaperProps={{
         sx: {
-          minHeight: '400px',  // Set a minimum height
+          minHeight: '400px',
         }
       }}
     >
@@ -41,7 +45,7 @@ function TicketCommentPopup({ open, onClose, ticketId }) {
           value={comment} 
           onChange={setComment} 
           placeholder="Enter your comment..."
-          style={{ height: '200px', marginBottom: '20px' }}  // Increase the height of the editor
+          style={{ height: '200px', marginBottom: '20px' }}
         />
       </DialogContent>
       <DialogActions>
@@ -50,7 +54,7 @@ function TicketCommentPopup({ open, onClose, ticketId }) {
           onClick={handleAddComment}
           color="primary"
           variant="contained"
-          disabled={loading || !comment.trim()} // Disable if loading or comment is empty
+          disabled={loading || !comment.trim()}
         >
           Add Comment
         </Button>
