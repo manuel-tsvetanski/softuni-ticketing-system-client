@@ -18,7 +18,7 @@ function Home() {
       <Avatar />
       <Stack spacing={2} direction="column" sx={{ mt: 2 }}>
         <Typography variant="h6">
-          {user ? `Welcome, ${user.name}!` : 'Welcome! Please log in to access your dashboard.'}
+          {user ? `Welcome, ${user.name}!` : 'Welcome Guest! Please log in to access your dashboard.'}
         </Typography>
         {user && (
           <Button 

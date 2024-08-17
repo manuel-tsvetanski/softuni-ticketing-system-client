@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import {
   Dialog, DialogTitle, DialogContent,
-  DialogActions, Button, TextField
+  DialogActions, Button
 } from '@mui/material';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { addComment } from '../../../features/comments/commentsSlice';
 
@@ -22,18 +24,24 @@ function TicketCommentPopup({ open, onClose, ticketId }) {
   };
 
   return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
+    <Dialog 
+      open={open} 
+      onClose={onClose} 
+      fullWidth 
+      maxWidth="md"  // Increase the size of the dialog to medium
+      PaperProps={{
+        sx: {
+          minHeight: '400px',  // Set a minimum height
+        }
+      }}
+    >
       <DialogTitle>Add Comment</DialogTitle>
       <DialogContent>
-        <TextField
-          margin="dense"
-          label="Comment"
-          type="text"
-          fullWidth
-          variant="outlined"
-          value={comment}
-          onChange={(e) => setComment(e.target.value)}
-          disabled={loading} // Disable input if loading
+        <ReactQuill 
+          value={comment} 
+          onChange={setComment} 
+          placeholder="Enter your comment..."
+          style={{ height: '200px', marginBottom: '20px' }}  // Increase the height of the editor
         />
       </DialogContent>
       <DialogActions>

@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { Container, TextField, Button, Typography, Box, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
+import ReactQuill from 'react-quill';  // Import ReactQuill
+import 'react-quill/dist/quill.snow.css'; // Import styles
 import { saveTicket, fetchTicketById } from '../../features/tickets/ticketsSlice';
 import { statusOptions } from '../../utils/statusUtils';
 
@@ -12,7 +14,7 @@ function EditTicket() {
   const { ticket, loading } = useSelector((state) => state.tickets);
 
   const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
+  const [description, setDescription] = useState(''); // Description will hold the HTML content
   const [status, setStatus] = useState('open');
 
   useEffect(() => {
@@ -48,14 +50,11 @@ function EditTicket() {
             onChange={(e) => setTitle(e.target.value)}
             autoFocus
           />
-          <TextField
-            margin="normal"
-            fullWidth
-            label="Description"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            multiline
-            rows={4}
+          <ReactQuill 
+            value={description} 
+            onChange={setDescription} 
+            placeholder="Enter ticket description here..."
+            style={{ height: '200px', marginBottom: '20px' }}
           />
           <FormControl fullWidth margin="normal">
             <InputLabel>Status</InputLabel>

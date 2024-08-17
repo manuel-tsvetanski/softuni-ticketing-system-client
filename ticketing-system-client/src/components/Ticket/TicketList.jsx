@@ -14,7 +14,7 @@ import { getStatusIcon } from '../../utils/statusUtils';
 function TicketList() {
   const dispatch = useDispatch();
   const { tickets, loading } = useSelector((state) => state.tickets);
-  const { isAuthenticated } = useSelector((state) => state.auth);
+  const { isAuthenticated, user } = useSelector((state) => state.auth); // Get authenticated user
   const navigate = useNavigate();
 
   const [selectedTicket, setSelectedTicket] = React.useState(null);
@@ -95,7 +95,7 @@ function TicketList() {
                     </Badge>
                   </IconButton>
                 </TableCell>
-                {isAuthenticated && (
+                {isAuthenticated && user.id === ticket.user_id && ( // Check if the user is the owner of the ticket
                   <TableCell align="right">
                     <IconButton color="primary" onClick={() => navigate(`/edit-ticket/${ticket.id}`)}>
                       <EditIcon />
