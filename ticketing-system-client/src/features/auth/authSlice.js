@@ -8,6 +8,7 @@ export const loginUser = createAsyncThunk('auth/loginUser', async(credentials, {
         localStorage.setItem('token', response.data.token);
         return response.data.user;
     } catch (error) {
+        console.log(error);
         if (error.response && error.response.data) {
             return rejectWithValue(error.response.data.error);
         }
@@ -43,6 +44,7 @@ export const registerUser = createAsyncThunk('auth/registerUser', async(userData
 });
 
 // Async action to fetch the current user's data
+// Async action to fetch the current user's data
 export const fetchUserApp = createAsyncThunk('auth/fetchUserApp', async(_, { rejectWithValue }) => {
     try {
         const response = await api.get('/user');
@@ -54,6 +56,7 @@ export const fetchUserApp = createAsyncThunk('auth/fetchUserApp', async(_, { rej
         return rejectWithValue('Failed to fetch user data');
     }
 });
+
 
 const authSlice = createSlice({
     name: 'auth',
@@ -79,14 +82,13 @@ const authSlice = createSlice({
                 state.errorMessage = null;
             })
             .addCase(loginUser.fulfilled, (state, action) => {
-                console.log("Login successful, user:", action.payload);
                 state.user = action.payload;
                 state.isAuthenticated = true;
                 state.loading = false;
                 state.errorMessage = null;
             })
             .addCase(loginUser.rejected, (state, action) => {
-                state.errorMessage = action.payload;
+                state.errorMessage = action.payload || null;
                 state.isAuthenticated = false;
                 state.loading = false;
             })

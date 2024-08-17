@@ -53,8 +53,6 @@ npm run preview: Serves the production build from the dist folder.
 npm run lint: Runs ESLint to lint the codebase.
 Project Structure
 The project's structure is as follows:
-
-arduino
  
 ticketing-system-client/
 ├── public/
@@ -73,8 +71,9 @@ ticketing-system-client/
 │   │   │   ├── Register.jsx
 │   │   │   └── Logout.jsx (if not already in AccountSettings)
 │   │   ├── Ticket/
-│   │   │   ├── TicketCommentList.jsx
-│   │   │   ├── TicketCommentPopup.jsx
+│   │   │   ├── Comment/
+│   │   │   │   ├──TicketCommentList.jsx
+│   │   │   │   └── TicketCommentPopup.jsx
 │   │   │   ├── TicketList.jsx
 │   │   │   └── TicketPopup.jsx
 │   │   ├── ConfirmationDialogPopup.jsx
