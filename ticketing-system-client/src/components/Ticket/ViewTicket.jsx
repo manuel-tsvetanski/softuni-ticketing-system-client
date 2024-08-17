@@ -3,12 +3,14 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { Container, Typography, Box, Button } from '@mui/material';
 import { fetchTicketById } from '../../features/tickets/ticketsSlice';
+import { getStatusLabel } from '../../utils/statusUtils'; // Import the utility function
 
 function ViewTicket() {
   const { id } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { ticket, loading } = useSelector((state) => state.tickets);
+  const { isAuthenticated } = useSelector((state) => state.auth); // Get authentication status
 
   useEffect(() => {
     dispatch(fetchTicketById(id));
@@ -25,16 +27,16 @@ function ViewTicket() {
         <Typography variant="body1" sx={{ mt: 2 }}>
           {ticket.description}
         </Typography>
-        <Typography variant="caption" sx={{ mt: 2 }}>
-          Status: {ticket.status}
+        <Typography variant="caption" sx={{ mt: 2, fontWeight: 'bold' }}>
+          Status: {getStatusLabel(ticket.status)} {/* Display status with label and icon */}
         </Typography>
         <Button
           fullWidth
           variant="outlined"
-          onClick={() => navigate('/dashboard')}
+          onClick={() => navigate(isAuthenticated ? '/dashboard' : '/')}
           sx={{ mt: 3 }}
         >
-          Back to Dashboard
+          Back to {isAuthenticated ? 'Dashboard' : 'Home'}
         </Button>
       </Box>
     </Container>

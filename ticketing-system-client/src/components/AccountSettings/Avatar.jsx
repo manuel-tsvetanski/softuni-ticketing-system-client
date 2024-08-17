@@ -22,17 +22,27 @@ function Avatar() {
   return (
     <AppBar position="static">
       <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 1 }}>
-        {isAuthenticated ? (
+        {/* Account settings on the left */}
+        {isAuthenticated && (
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <AccountMenu />
-            <Logout />
-          </Box>
-        ) : (
-          <Box sx={{ display: 'flex', justifyContent: 'center', flexGrow: 1 }}>
-            <Button color="inherit" onClick={() => navigate('/login')}>Login</Button>
-            <Button color="inherit" onClick={() => navigate('/register')}>Register</Button>
           </Box>
         )}
+
+        {/* Center space to push content to the sides */}
+        <Box sx={{ flexGrow: 1 }} />
+
+        {/* Logout on the right if authenticated, otherwise Login and Register */}
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          {isAuthenticated ? (
+            <Logout />
+          ) : (
+            <>
+              <Button color="inherit" onClick={() => navigate('/login')}>Login</Button>
+              <Button color="inherit" onClick={() => navigate('/register')}>Register</Button>
+            </>
+          )}
+        </Box>
       </Toolbar>
     </AppBar>
   );

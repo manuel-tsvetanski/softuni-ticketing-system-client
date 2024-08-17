@@ -6,6 +6,7 @@ import { loginUser } from '../../features/auth/authSlice';
 
 function Login() {
   const [credentials, setCredentials] = useState({ email: '', password: '' });
+  const [hasSubmitted, setHasSubmitted] = useState(false); // Track form submission
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -20,6 +21,7 @@ function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setHasSubmitted(true); // Mark form as submitted
     dispatch(loginUser(credentials));
   };
 
@@ -43,7 +45,7 @@ function Login() {
           Login
         </Typography>
         <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
-          {errorMessage && (
+          {hasSubmitted && errorMessage && ( // Only show error if form has been submitted
             <Alert severity="error" sx={{ width: '100%' }}>
               {errorMessage}
             </Alert>

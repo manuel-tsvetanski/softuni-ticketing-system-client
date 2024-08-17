@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { fetchComments, addComment, deleteComment } from '../../../features/comments/commentsSlice';
 import TicketCommentPopup from './TicketCommentPopup';
 import ConfirmationDialog from '../../ConfirmationDialogPopup';
+import { fetchTickets } from '../../../features/tickets/ticketsSlice'; // Import the fetchTickets action
 
 function TicketCommentList({ ticketId, open, onClose, onUpdateCommentCount }) {
   const dispatch = useDispatch();
@@ -36,10 +37,18 @@ function TicketCommentList({ ticketId, open, onClose, onUpdateCommentCount }) {
     setDeleteDialogOpen(true);
   };
 
-  const handleDeleteConfirm = () => {
-    dispatch(deleteComment({ commentId: selectedCommentId }));
-    setDeleteDialogOpen(false);
-    setSelectedCommentId(null);
+  const handleDeleteConfirm = async () => {
+    const resultAction = await dispatch(deleteComment({ commentId: selectedCommentId }));
+    
+    if (deleteComment.fulfilled.match(resultAction)) {
+      if (onUpdateCommentCount) {
+        onUpdateCommentCount(); // Trigger the comment count update
+      }
+      setDeleteDialogOpen(false);
+      setSelectedCommentId(null);
+    } else {
+      console.error("Error deleting comment:", resultAction.payload);
+    }
   };
 
   const handleDeleteCancel = () => {
@@ -47,9 +56,8 @@ function TicketCommentList({ ticketId, open, onClose, onUpdateCommentCount }) {
     setSelectedCommentId(null);
   };
 
-  const handleCommentAdded = (newComment) => {
-    dispatch(addComment({ ticketId, commentData: newComment }));
-    setCommentPopupOpen(false);
+  const handleCommentAdded = async () => {
+    await dispatch(fetchTickets()); // Refetch tickets to update the comments count in the tickets state
   };
 
   const handlePreviousPage = () => {
@@ -107,7 +115,7 @@ function TicketCommentList({ ticketId, open, onClose, onUpdateCommentCount }) {
         open={commentPopupOpen}
         onClose={handleCloseCommentPopup}
         ticketId={ticketId}
-        onCommentAdded={handleCommentAdded} // Use the handler to add a comment
+        onCommentAdded={handleCommentAdded} // Use the handler to update the comment count
       />
       <ConfirmationDialog
         open={deleteDialogOpen}

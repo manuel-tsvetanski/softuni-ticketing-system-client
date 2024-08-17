@@ -15,8 +15,22 @@ function Dashboard() {
   return (
     <Box sx={{ padding: 2 }}>
       <Avatar user={user} />
-      <Typography variant="h4" component="h1" gutterBottom>
-        Dashboard
+      <Typography
+        variant="h6"
+        component="h1"
+        gutterBottom
+        sx={{
+          fontWeight: 'bold',
+          background: 'linear-gradient(90deg, rgba(85,108,214,1) 0%, rgba(25,133,123,1) 100%)',
+          WebkitBackgroundClip: 'text',
+          WebkitTextFillColor: 'transparent',
+          textShadow: '2px 2px 4px rgba(0,0,0,0.3)',
+          animation: 'fadeIn 2s ease-in-out',
+        }}
+      >
+        {user
+          ? `Welcome, to your dashboard ${user.name}!`
+          : 'Welcome! Please log in to access your dashboard.'}
       </Typography>
       <TicketList />
       <Button
