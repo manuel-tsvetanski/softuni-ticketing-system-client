@@ -8,7 +8,7 @@ import { Delete as DeleteIcon, Edit as EditIcon, Comment as CommentIcon } from '
 import { useDispatch, useSelector } from 'react-redux';
 import TicketPopup from './TicketPopup';
 import ConfirmationDialog from '../ConfirmationDialogPopup';
-import TicketCommentList from './TicketCommentList';
+import TicketCommentList from './Comment/TicketCommentList';
 import { fetchTickets, saveTicket, deleteTicket } from '../../features/tickets/ticketsSlice';
 import { getStatusIcon } from '../../utils/statusUtils';
 

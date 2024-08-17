@@ -20,18 +20,10 @@ function Dashboard() {
       </Typography>
       <TicketList />
       <Button
-            fullWidth
-            variant="outlined"
+            variant="outlined" 
+            color="primary" 
+            sx={{ mt: 1 }}
             onClick={() => navigate('/')}
-            sx={{ 
-              width: '40%',
-              mt: 2,
-              backgroundColor: theme.palette.primary.main,
-              color: theme.palette.primary.contrastText,
-              '&:hover': {
-                backgroundColor: theme.palette.primary.dark,
-              }
-            }}
           >
             Back to Home
         </Button>
