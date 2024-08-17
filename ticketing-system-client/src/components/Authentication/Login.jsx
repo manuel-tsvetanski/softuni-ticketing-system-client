@@ -24,9 +24,7 @@ function Login() {
   };
 
   useEffect(() => {
-    console.log("isAuthenticated state in Login component:", isAuthenticated);
     if (isAuthenticated) {
-      console.log("Already authenticated, redirecting to dashboard.");
       navigate('/dashboard'); // Redirect to dashboard if logged in
     }
   }, [isAuthenticated, navigate]);
