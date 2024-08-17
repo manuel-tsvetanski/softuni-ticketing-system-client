@@ -10,6 +10,9 @@ import Register from './components/Authentication/Register';
 import Dashboard from './components/Dashboard';
 import EditAccount from './components/AccountSettings/EditAccount';
 import ChangePassword from './components/AccountSettings/ChangePassword';
+import CreateTicket from './components/Ticket/CreateTicket';
+import EditTicket from './components/Ticket/EditTicket';
+import ViewTicket from './components/Ticket/ViewTicket';
 import ProtectedRoute from './components/ProtectedRoute';
 
 const theme = createTheme({
@@ -106,6 +109,34 @@ function App() {
                   element={
                     <ProtectedRoute isAuthRequired={true} redirectTo="/login">
                       <ChangePassword />
+                    </ProtectedRoute>
+                  } 
+                />
+
+                {/* Ticket Management Routes */}
+                <Route 
+                  path="/create-ticket" 
+                  element={
+                    <ProtectedRoute isAuthRequired={true} redirectTo="/login">
+                      <CreateTicket />
+                    </ProtectedRoute>
+                  } 
+                />
+
+                <Route 
+                  path="/edit-ticket/:id" 
+                  element={
+                    <ProtectedRoute isAuthRequired={true} redirectTo="/login">
+                      <EditTicket />
+                    </ProtectedRoute>
+                  } 
+                />
+
+                <Route 
+                  path="/view-ticket/:id" 
+                  element={
+                    <ProtectedRoute isAuthRequired={true} redirectTo="/login">
+                      <ViewTicket />
                     </ProtectedRoute>
                   } 
                 />

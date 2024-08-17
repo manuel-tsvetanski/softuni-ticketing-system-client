@@ -1,44 +1,29 @@
 import React, { useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import {
   Table, TableBody, TableCell, TableContainer,
   TableHead, TableRow, Paper, Button, IconButton, Badge
 } from '@mui/material';
 import { Delete as DeleteIcon, Edit as EditIcon, Comment as CommentIcon } from '@mui/icons-material';
 import { useDispatch, useSelector } from 'react-redux';
-import TicketPopup from './TicketPopup';
 import ConfirmationDialog from '../ConfirmationDialogPopup';
 import TicketCommentList from './Comment/TicketCommentList';
-import { fetchTickets, saveTicket, deleteTicket } from '../../features/tickets/ticketsSlice';
+import { fetchTickets, deleteTicket } from '../../features/tickets/ticketsSlice';
 import { getStatusIcon } from '../../utils/statusUtils';
 
 function TicketList() {
   const dispatch = useDispatch();
   const { tickets, loading } = useSelector((state) => state.tickets);
   const { isAuthenticated } = useSelector((state) => state.auth);
+  const navigate = useNavigate();
 
   const [selectedTicket, setSelectedTicket] = React.useState(null);
-  const [popupOpen, setPopupOpen] = React.useState(false);
   const [commentPopupOpen, setCommentPopupOpen] = React.useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
-  const [editMode, setEditMode] = React.useState(false);
-  const [viewMode, setViewMode] = React.useState(false);
 
   useEffect(() => {
     dispatch(fetchTickets());
   }, [dispatch]);
-
-  const handleOpenPopup = (ticket, mode) => {
-    setSelectedTicket(ticket || {});
-    setPopupOpen(true);
-    setEditMode(mode === 'edit');
-    setViewMode(mode === 'view');
-  };
-
-  const handleClosePopup = () => {
-    setPopupOpen(false);
-    setSelectedTicket(null);
-  };
 
   const handleOpenComments = (ticket) => {
     setSelectedTicket(ticket || {});
@@ -66,14 +51,6 @@ function TicketList() {
     setSelectedTicket(null);
   };
 
-  const handleSubmit = async (ticketData) => {
-    dispatch(saveTicket({ ticketId: selectedTicket?.id, ticketData }));
-    setPopupOpen(false);
-    setEditMode(false);
-    setViewMode(false);
-    setSelectedTicket(null);
-  };
-
   const updateCommentCount = (ticketId, newCount) => {
     // Use a Redux action to update the comment count if needed
     // Assuming the Redux store holds this state and it should be updated in a proper reducer
@@ -87,7 +64,7 @@ function TicketList() {
     <div>
       {isAuthenticated && (
         <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '10px' }}>
-          <Button variant="contained" color="primary" onClick={() => handleOpenPopup(null, 'create')}>
+          <Button variant="contained" color="primary" onClick={() => navigate('/create-ticket')}>
             Create New Ticket
           </Button>
         </div>
@@ -106,7 +83,7 @@ function TicketList() {
             {tickets.map((ticket) => (
               <TableRow key={ticket.id}>
                 <TableCell>
-                  <Link to="#" onClick={() => handleOpenPopup(ticket, 'view')}>
+                  <Link to={`/view-ticket/${ticket.id}`}>
                     {ticket.title}
                   </Link>
                 </TableCell>
@@ -120,7 +97,7 @@ function TicketList() {
                 </TableCell>
                 {isAuthenticated && (
                   <TableCell align="right">
-                    <IconButton color="primary" onClick={() => handleOpenPopup(ticket, 'edit')}>
+                    <IconButton color="primary" onClick={() => navigate(`/edit-ticket/${ticket.id}`)}>
                       <EditIcon />
                     </IconButton>
                     <IconButton color="secondary" onClick={() => handleDeleteClick(ticket)}>
@@ -133,14 +110,6 @@ function TicketList() {
           </TableBody>
         </Table>
       </TableContainer>
-      <TicketPopup
-        open={popupOpen}
-        onClose={handleClosePopup}
-        onSubmit={handleSubmit}
-        initialData={selectedTicket}
-        isEdit={editMode}
-        isView={viewMode}
-      />
       <TicketCommentList
         ticketId={selectedTicket?.id}
         open={commentPopupOpen}
