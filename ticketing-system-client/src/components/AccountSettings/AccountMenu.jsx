@@ -38,9 +38,6 @@ function AccountMenu() {
 
   return (
     <Box sx={{ display: 'flex', alignItems: 'center' }}>
-      <Typography variant="h6" component="div" sx={{ overflow: 'hidden', textOverflow: 'ellipsis', mr: 2 }}>
-        Welcome, {isAuthenticated ? user.name : 'Guest'}
-      </Typography>
       <Tooltip title="Account settings">
         <IconButton
           color="inherit"

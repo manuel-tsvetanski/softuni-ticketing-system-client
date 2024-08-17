@@ -132,13 +132,10 @@ function App() {
                   } 
                 />
 
+                {/* ViewTicket route accessible to all users */}
                 <Route 
                   path="/view-ticket/:id" 
-                  element={
-                    <ProtectedRoute isAuthRequired={true} redirectTo="/login">
-                      <ViewTicket />
-                    </ProtectedRoute>
-                  } 
+                  element={<ViewTicket />} 
                 />
               </Routes>
             </Paper>
