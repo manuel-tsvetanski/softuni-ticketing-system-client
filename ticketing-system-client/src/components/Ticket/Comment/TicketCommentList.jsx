@@ -5,9 +5,9 @@ import {
 } from '@mui/material';
 import { Delete as DeleteIcon, AddComment as AddCommentIcon, ArrowBack as ArrowBackIcon, ArrowForward as ArrowForwardIcon } from '@mui/icons-material';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchComments, addComment, deleteComment } from '../../features/comments/commentsSlice';
+import { fetchComments, addComment, deleteComment } from '../../../features/comments/commentsSlice';
 import TicketCommentPopup from './TicketCommentPopup';
-import ConfirmationDialog from '../ConfirmationDialogPopup';
+import ConfirmationDialog from '../../ConfirmationDialogPopup';
 
 function TicketCommentList({ ticketId, open, onClose, onUpdateCommentCount }) {
   const dispatch = useDispatch();

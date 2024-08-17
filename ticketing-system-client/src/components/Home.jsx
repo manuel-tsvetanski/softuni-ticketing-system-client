@@ -20,7 +20,11 @@ function Home() {
           {user ? `Welcome, ${user.name}!` : 'Welcome! Please log in to access your dashboard.'}
         </Typography>
         {user && (
-          <Button variant="contained" color="primary" onClick={() => handleNavigation('/dashboard')}>
+          <Button 
+          variant="outlined" 
+          color="primary" 
+          sx={{ mt: 1 }}
+          onClick={() => handleNavigation('/dashboard')}>
             Dashboard
           </Button>
         )}

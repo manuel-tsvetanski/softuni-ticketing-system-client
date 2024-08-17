@@ -13,16 +13,11 @@ import {
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import EditIcon from '@mui/icons-material/Edit';
 import LockIcon from '@mui/icons-material/Lock';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import AccountPopup from './AccountPopup';
-import Logout from '../Authentication/Logout';
 
 function AccountMenu() {
   const [anchorEl, setAnchorEl] = useState(null);
-  const [popupMode, setPopupMode] = useState(null);
-  const [popupOpen, setPopupOpen] = useState(false);
-
   const { user, isAuthenticated } = useSelector((state) => state.auth);
   const navigate = useNavigate();
 
@@ -36,20 +31,9 @@ function AccountMenu() {
     setAnchorEl(null);
   };
 
-  const handleOpenPopup = (mode) => {
-    setPopupMode(mode);
-    setPopupOpen(true);
+  const handleNavigate = (path) => {
+    navigate(path);
     handleClose();
-  };
-
-  const handleClosePopup = () => {
-    setPopupOpen(false);
-  };
-
-  const handleUserUpdate = (updatedUser) => {
-    // Dispatch an action to update the user in the Redux store if needed
-    // dispatch(updateUser(updatedUser));
-    handleClosePopup();
   };
 
   return (
@@ -100,26 +84,19 @@ function AccountMenu() {
           vertical: 'bottom',
         }}
       >
-        <MenuItem onClick={() => handleOpenPopup('edit-account')}>
+        <MenuItem onClick={() => handleNavigate('/edit-account')}>
           <ListItemIcon>
             <EditIcon fontSize="small" />
           </ListItemIcon>
           <ListItemText>Edit User Account</ListItemText>
         </MenuItem>
-        <MenuItem onClick={() => handleOpenPopup('change-password')}>
+        <MenuItem onClick={() => handleNavigate('/change-password')}>
           <ListItemIcon>
             <LockIcon fontSize="small" />
           </ListItemIcon>
           <ListItemText>Change Password</ListItemText>
         </MenuItem>
       </Menu>
-      <AccountPopup
-        open={popupOpen}
-        onClose={handleClosePopup}
-        mode={popupMode}
-        user={user}
-        onUserUpdate={handleUserUpdate}
-      />
     </Box>
   );
 }

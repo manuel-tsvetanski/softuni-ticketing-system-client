@@ -4,7 +4,7 @@ import {
   DialogActions, Button, TextField
 } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
-import { addComment } from '../../features/comments/commentsSlice';
+import { addComment } from '../../../features/comments/commentsSlice';
 
 function TicketCommentPopup({ open, onClose, ticketId }) {
   const [comment, setComment] = useState('');
