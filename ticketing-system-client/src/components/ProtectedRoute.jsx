@@ -6,15 +6,11 @@ import PropTypes from 'prop-types';
 function ProtectedRoute({ children, isAuthRequired = true, redirectTo }) {
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
 
-  console.log("isAuthenticated:", isAuthenticated);
-
   if (isAuthRequired && !isAuthenticated) {
-    console.log("User is not authenticated, redirecting to:", redirectTo);
     return <Navigate to={redirectTo} />;
   }
 
   if (!isAuthRequired && isAuthenticated) {
-    console.log("User is authenticated but trying to access a public route, redirecting to dashboard.");
     return <Navigate to="/dashboard" />;
   }
 

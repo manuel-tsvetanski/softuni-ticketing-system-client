@@ -18,7 +18,6 @@ function TicketCommentPopup({ open, onClose, ticketId, onCommentAdded }) {
     if (addComment.fulfilled.match(resultAction)) {
       setComment(''); // Clear the input field after successful comment addition
       if (onCommentAdded) {
-        console.log('Comment added, triggering onCommentAdded');
         onCommentAdded(); // Trigger the comment added callback
       }
       onClose(); // Close the dialog after adding the comment

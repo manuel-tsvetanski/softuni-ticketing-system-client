@@ -26,7 +26,6 @@ function TicketList() {
 
   // Add useEffect to monitor ticket updates
   useEffect(() => {
-    console.log('Tickets updated:', tickets);
   }, [tickets]);
 
   const handleOpenComments = (ticket) => {
